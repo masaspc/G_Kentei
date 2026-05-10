@@ -14,7 +14,9 @@ from app.auth.dependencies import get_current_user
 from app.db import get_db
 from app.db.models import Question
 from app.llm.explanation import generate_explanation
+from app.llm.generator import generate_question
 from app.llm.usage import is_over_budget, log_usage
+from app.schemas.generate import GenerateQuestionRequest, GenerateQuestionResponse
 from app.schemas.question import (
     ImportResult,
     QuestionCreate,
@@ -82,6 +84,41 @@ async def list_categories(
     )
     rows = (await db.execute(stmt)).scalars().all()
     return list(rows)
+
+
+@router.post("/generate", response_model=GenerateQuestionResponse)
+async def generate_draft(
+    payload: GenerateQuestionRequest,
+    db: AsyncSession = Depends(get_db),
+    _: str = Depends(get_current_user),
+) -> GenerateQuestionResponse:
+    if await is_over_budget(db):
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            "Monthly Claude API budget exceeded",
+        )
+    try:
+        result = await generate_question(
+            category=payload.category,
+            difficulty=payload.difficulty,
+            question_type=payload.question_type,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE, str(exc)
+        ) from exc
+    await log_usage(
+        db, model=result.model, purpose="question_gen", usage=result.usage
+    )
+    q = result.question
+    return GenerateQuestionResponse(
+        question_text=q.question_text,
+        question_type=q.question_type,  # type: ignore[arg-type]
+        choices=q.choices,
+        correct_answer=q.correct_answer,
+        explanation=q.explanation,
+        tags=q.tags,
+    )
 
 
 @router.post("/import", response_model=ImportResult)
