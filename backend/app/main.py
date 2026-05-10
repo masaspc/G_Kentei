@@ -8,6 +8,7 @@ from app.api.me import router as me_router
 from app.api.questions import router as questions_router
 from app.api.stats import router as stats_router
 from app.api.study import router as study_router
+from app.api.terms import router as terms_router
 from app.config import get_settings
 
 settings = get_settings()
@@ -29,3 +30,4 @@ app.include_router(questions_router, prefix="/api")
 app.include_router(study_router, prefix="/api")
 app.include_router(api_usage_router, prefix="/api")
 app.include_router(stats_router, prefix="/api")
+app.include_router(terms_router, prefix="/api")

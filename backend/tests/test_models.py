@@ -8,6 +8,7 @@ def test_metadata_has_expected_tables() -> None:
         "study_logs",
         "srs_states",
         "api_usage_logs",
+        "terms",
     }
 
 

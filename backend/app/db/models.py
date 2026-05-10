@@ -81,6 +81,23 @@ class SrsState(Base):
     )
 
 
+class Term(Base):
+    __tablename__ = "terms"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    term: Mapped[str] = mapped_column(String(200), index=True)
+    definition: Mapped[str] = mapped_column(Text)
+    syllabus_category: Mapped[str | None] = mapped_column(String(100), index=True)
+    tags: Mapped[Any] = mapped_column(JSONB, server_default="[]")
+    reference_links: Mapped[Any] = mapped_column(JSONB, server_default="[]")
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
 class ApiUsageLog(Base):
     __tablename__ = "api_usage_logs"
 
