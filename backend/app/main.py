@@ -6,6 +6,7 @@ from app.api.auth import router as auth_router
 from app.api.bookmarks import router as bookmarks_router
 from app.api.chat import router as chat_router
 from app.api.exam import router as exam_router
+from app.api.export import router as export_router
 from app.api.health import router as health_router
 from app.api.me import router as me_router
 from app.api.notes import router as notes_router
@@ -39,3 +40,4 @@ app.include_router(bookmarks_router, prefix="/api")
 app.include_router(chat_router, prefix="/api")
 app.include_router(exam_router, prefix="/api")
 app.include_router(notes_router, prefix="/api")
+app.include_router(export_router, prefix="/api")

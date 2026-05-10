@@ -210,6 +210,13 @@ export default function Home() {
           <h3 className="font-semibold">Claude API 利用状況</h3>
           <p className="mt-1 text-sm text-slate-600">今月のコストと予算</p>
         </Link>
+        <Link
+          href="/admin/export"
+          className="block rounded-lg border border-slate-200 bg-white p-6 hover:border-blue-400 hover:bg-blue-50"
+        >
+          <h3 className="font-semibold">エクスポート</h3>
+          <p className="mt-1 text-sm text-slate-600">学習履歴を CSV で保存</p>
+        </Link>
       </section>
     </main>
   );
