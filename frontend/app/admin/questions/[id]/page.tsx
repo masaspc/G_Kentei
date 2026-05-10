@@ -81,6 +81,8 @@ export default function EditQuestionPage() {
       </Link>
       <h1 className="mt-1 text-2xl font-bold">問題編集 #{question.id}</h1>
 
+      <NoteSection questionId={question.id} />
+
       <div className="mt-4 rounded border border-slate-200 bg-slate-50 p-4">
         <div className="flex items-center justify-between">
           <div>
@@ -113,5 +115,53 @@ export default function EditQuestionPage() {
         />
       </div>
     </main>
+  );
+}
+
+function NoteSection({ questionId }: { questionId: number }) {
+  const [note, setNote] = useState("");
+  const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const res = await apiFetch(`/api/questions/${questionId}/note`);
+      if (res.ok) {
+        const data = (await res.json()) as { note: string | null };
+        setNote(data.note ?? "");
+      }
+      setLoaded(true);
+    })();
+  }, [questionId]);
+
+  async function save() {
+    setSaving(true);
+    await apiFetch(`/api/questions/${questionId}/note`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ note }),
+    });
+    setSaving(false);
+  }
+
+  if (!loaded) return null;
+  return (
+    <div className="mt-4 rounded border border-slate-200 bg-slate-50 p-4">
+      <p className="text-sm font-semibold">自分用メモ</p>
+      <textarea
+        rows={3}
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        className="mt-2 block w-full rounded border border-slate-300 px-2 py-1 text-sm"
+      />
+      <button
+        type="button"
+        onClick={save}
+        disabled={saving}
+        className="mt-2 rounded border border-slate-300 px-3 py-1 text-xs font-semibold hover:bg-slate-200 disabled:opacity-50"
+      >
+        {saving ? "保存中..." : "メモを保存"}
+      </button>
+    </div>
   );
 }

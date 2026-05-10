@@ -11,6 +11,7 @@ def test_metadata_has_expected_tables() -> None:
         "terms",
         "bookmarks",
         "exam_sessions",
+        "question_notes",
     }
 
 

@@ -506,6 +506,7 @@ function Judgement({
         </div>
       )}
 
+      <NotePanel questionId={question.id} />
       <ChatPanel questionId={question.id} />
 
       <div className="mt-4 space-y-2">
@@ -549,6 +550,62 @@ function Judgement({
         </button>
       </div>
     </section>
+  );
+}
+
+function NotePanel({ questionId }: { questionId: number }) {
+  const [note, setNote] = useState("");
+  const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setLoaded(false);
+    setSaved(false);
+    (async () => {
+      const res = await apiFetch(`/api/questions/${questionId}/note`);
+      if (res.ok) {
+        const data = (await res.json()) as { note: string | null };
+        setNote(data.note ?? "");
+      }
+      setLoaded(true);
+    })();
+  }, [questionId]);
+
+  async function save() {
+    setSaving(true);
+    const res = await apiFetch(`/api/questions/${questionId}/note`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ note }),
+    });
+    setSaving(false);
+    if (res.ok) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1500);
+    }
+  }
+
+  if (!loaded) return null;
+  return (
+    <div className="mt-4 rounded border border-slate-200 bg-white p-3">
+      <p className="text-sm font-semibold">メモ</p>
+      <textarea
+        rows={2}
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        placeholder="この問題に関する自分用のメモ"
+        className="mt-2 block w-full rounded border border-slate-300 px-2 py-1 text-sm"
+      />
+      <button
+        type="button"
+        onClick={save}
+        disabled={saving}
+        className="mt-2 rounded border border-slate-300 px-3 py-1 text-xs font-semibold hover:bg-slate-100 disabled:opacity-50"
+      >
+        {saving ? "保存中..." : saved ? "保存しました" : "メモを保存"}
+      </button>
+    </div>
   );
 }
 

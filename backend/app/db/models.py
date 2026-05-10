@@ -114,6 +114,20 @@ class Bookmark(Base):
     )
 
 
+class QuestionNote(Base):
+    __tablename__ = "question_notes"
+
+    question_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("questions.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    note: Mapped[str] = mapped_column(Text)
+    updated_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
 class Term(Base):
     __tablename__ = "terms"
 
