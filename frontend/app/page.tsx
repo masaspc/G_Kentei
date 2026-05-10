@@ -167,6 +167,13 @@ export default function Home() {
           <p className="mt-1 text-sm text-slate-600">分野・難易度を選んで演習</p>
         </Link>
         <Link
+          href="/exam"
+          className="block rounded-lg border border-slate-200 bg-white p-6 hover:border-blue-400 hover:bg-blue-50"
+        >
+          <h3 className="font-semibold">模擬試験</h3>
+          <p className="mt-1 text-sm text-slate-600">本番形式 145問・100分</p>
+        </Link>
+        <Link
           href="/stats/heatmap"
           className="block rounded-lg border border-slate-200 bg-white p-6 hover:border-blue-400 hover:bg-blue-50"
         >

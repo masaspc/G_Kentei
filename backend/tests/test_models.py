@@ -10,6 +10,7 @@ def test_metadata_has_expected_tables() -> None:
         "api_usage_logs",
         "terms",
         "bookmarks",
+        "exam_sessions",
     }
 
 

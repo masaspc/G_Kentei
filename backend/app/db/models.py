@@ -60,9 +60,29 @@ class StudyLog(Base):
     is_correct: Mapped[bool] = mapped_column(Boolean)
     response_time_ms: Mapped[int | None] = mapped_column(Integer)
     self_evaluation: Mapped[int | None] = mapped_column(SmallInteger)
+    exam_session_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey("exam_sessions.id", ondelete="SET NULL"),
+        index=True,
+    )
     studied_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now(), index=True
     )
+
+
+class ExamSession(Base):
+    __tablename__ = "exam_sessions"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    started_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now()
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP(timezone=True)
+    )
+    total_questions: Mapped[int] = mapped_column(Integer)
+    correct_count: Mapped[int | None] = mapped_column(Integer)
+    elapsed_seconds: Mapped[int | None] = mapped_column(Integer)
 
 
 class SrsState(Base):
