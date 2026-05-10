@@ -57,12 +57,20 @@ export default function QuestionsAdminPage() {
           <h1 className="mt-1 text-2xl font-bold">問題管理</h1>
           <p className="text-sm text-slate-600">合計 {total} 問</p>
         </div>
-        <Link
-          href="/admin/questions/new"
-          className="rounded bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
-        >
-          + 新規作成
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/admin/questions/import"
+            className="rounded border border-slate-300 px-4 py-2 font-semibold hover:bg-slate-100"
+          >
+            インポート
+          </Link>
+          <Link
+            href="/admin/questions/new"
+            className="rounded bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
+          >
+            + 新規作成
+          </Link>
+        </div>
       </div>
 
       <div className="mt-6 flex gap-2">

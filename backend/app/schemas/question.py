@@ -56,3 +56,14 @@ class QuestionListResponse(BaseModel):
     total: int
     page: int
     page_size: int
+
+
+class ImportError(BaseModel):
+    row: int
+    message: str
+
+
+class ImportResult(BaseModel):
+    success: int
+    failed: int
+    errors: list[ImportError]

@@ -1,4 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    UploadFile,
+    status,
+)
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -6,10 +14,16 @@ from app.auth.dependencies import get_current_user
 from app.db import get_db
 from app.db.models import Question
 from app.schemas.question import (
+    ImportResult,
     QuestionCreate,
     QuestionListResponse,
     QuestionRead,
     QuestionUpdate,
+)
+from app.services.question_import import (
+    import_questions,
+    parse_csv,
+    parse_json,
 )
 
 router = APIRouter(prefix="/questions", tags=["questions"])
@@ -52,6 +66,35 @@ async def list_questions(
         page=page,
         page_size=page_size,
     )
+
+
+@router.post("/import", response_model=ImportResult)
+async def import_questions_endpoint(
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    _: str = Depends(get_current_user),
+) -> ImportResult:
+    content = await file.read()
+    filename = (file.filename or "").lower()
+    content_type = (file.content_type or "").lower()
+
+    is_csv = filename.endswith(".csv") or "csv" in content_type
+    is_json = filename.endswith(".json") or "json" in content_type
+
+    try:
+        if is_csv and not is_json:
+            records = parse_csv(content)
+        elif is_json:
+            records = parse_json(content)
+        else:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                "Unsupported file format. Use .csv or .json",
+            )
+    except ValueError as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
+
+    return await import_questions(records, db)
 
 
 @router.post("", response_model=QuestionRead, status_code=status.HTTP_201_CREATED)
