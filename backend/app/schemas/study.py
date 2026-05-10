@@ -2,7 +2,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-SessionCondition = Literal["all", "unanswered"]
+SessionCondition = Literal["all", "unanswered", "srs_due"]
 
 
 class StudySessionRequest(BaseModel):
@@ -35,7 +35,22 @@ class StudyAnswerRequest(BaseModel):
 
 
 class StudyAnswerResponse(BaseModel):
+    study_log_id: int
     is_correct: bool
     correct_answer: Any
     explanation: str | None
     reference_links: list[str]
+
+
+class EvaluateRequest(BaseModel):
+    question_id: int
+    self_evaluation: int = Field(ge=0, le=3)
+    study_log_id: int | None = None
+
+
+class EvaluateResponse(BaseModel):
+    next_review_in_days: int
+
+
+class DueCountResponse(BaseModel):
+    due_count: int

@@ -15,13 +15,20 @@ export type StudySessionResponse = {
 };
 
 export type StudyAnswerResponse = {
+  study_log_id: number;
   is_correct: boolean;
   correct_answer: unknown;
   explanation: string | null;
   reference_links: string[];
 };
 
-export type SessionCondition = "all" | "unanswered";
+export type SessionCondition = "all" | "unanswered" | "srs_due";
+
+export type SrsRating = 0 | 1 | 2 | 3;
+
+export type EvaluateResponse = {
+  next_review_in_days: number;
+};
 
 export type SessionRecord = {
   question: PracticeQuestion;

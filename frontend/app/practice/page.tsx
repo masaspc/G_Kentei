@@ -8,6 +8,7 @@ import {
   PracticeQuestion,
   SessionCondition,
   SessionRecord,
+  SrsRating,
   StudyAnswerResponse,
   StudySessionResponse,
 } from "../lib/study";
@@ -102,6 +103,21 @@ export default function PracticePage() {
     setMode("judged");
   }
 
+  async function evaluate(rating: SrsRating) {
+    if (!judgement) return;
+    const question = questions[index];
+    await apiFetch("/api/study/evaluate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question_id: question.id,
+        self_evaluation: rating,
+        study_log_id: judgement.study_log_id,
+      }),
+    });
+    goNext();
+  }
+
   function goNext() {
     if (index + 1 >= questions.length) {
       setMode("done");
@@ -177,6 +193,7 @@ export default function PracticePage() {
               >
                 <option value="all">すべて</option>
                 <option value="unanswered">未回答のみ</option>
+                <option value="srs_due">SRS復習対象のみ</option>
               </select>
             </label>
           </div>
@@ -215,6 +232,7 @@ export default function PracticePage() {
           judgement={judgement}
           onSubmit={submitAnswer}
           onNext={goNext}
+          onEvaluate={evaluate}
         />
       )}
 
@@ -231,6 +249,7 @@ function Session({
   judgement,
   onSubmit,
   onNext,
+  onEvaluate,
 }: {
   questions: PracticeQuestion[];
   index: number;
@@ -239,6 +258,7 @@ function Session({
   judgement: StudyAnswerResponse | null;
   onSubmit: (answer: unknown) => void;
   onNext: () => void;
+  onEvaluate: (rating: SrsRating) => void;
 }) {
   const question = questions[index];
   return (
@@ -259,7 +279,12 @@ function Session({
       </div>
 
       {mode === "judged" && judgement && (
-        <Judgement question={question} judgement={judgement} onNext={onNext} />
+        <Judgement
+          question={question}
+          judgement={judgement}
+          onNext={onNext}
+          onEvaluate={onEvaluate}
+        />
       )}
     </section>
   );
@@ -396,10 +421,12 @@ function Judgement({
   question,
   judgement,
   onNext,
+  onEvaluate,
 }: {
   question: PracticeQuestion;
   judgement: StudyAnswerResponse;
   onNext: () => void;
+  onEvaluate: (rating: SrsRating) => void;
 }) {
   return (
     <section
@@ -444,13 +471,46 @@ function Judgement({
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={onNext}
-        className="mt-4 rounded bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
-      >
-        次へ →
-      </button>
+      <div className="mt-4 space-y-2">
+        <p className="text-sm font-semibold">理解度の自己評価 (SRS)</p>
+        <div className="grid grid-cols-4 gap-2">
+          <button
+            type="button"
+            onClick={() => onEvaluate(0)}
+            className="rounded bg-red-100 px-2 py-2 text-sm font-semibold hover:bg-red-200"
+          >
+            Again
+          </button>
+          <button
+            type="button"
+            onClick={() => onEvaluate(1)}
+            className="rounded bg-orange-100 px-2 py-2 text-sm font-semibold hover:bg-orange-200"
+          >
+            Hard
+          </button>
+          <button
+            type="button"
+            onClick={() => onEvaluate(2)}
+            className="rounded bg-blue-100 px-2 py-2 text-sm font-semibold hover:bg-blue-200"
+          >
+            Good
+          </button>
+          <button
+            type="button"
+            onClick={() => onEvaluate(3)}
+            className="rounded bg-green-100 px-2 py-2 text-sm font-semibold hover:bg-green-200"
+          >
+            Easy
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={onNext}
+          className="text-xs text-slate-500 hover:underline"
+        >
+          評価をスキップして次へ →
+        </button>
+      </div>
     </section>
   );
 }
