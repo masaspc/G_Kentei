@@ -92,6 +92,13 @@ export default function Home() {
           <h3 className="font-semibold">問題管理</h3>
           <p className="mt-1 text-sm text-slate-600">問題の作成・編集・削除</p>
         </Link>
+        <Link
+          href="/admin/api-usage"
+          className="block rounded-lg border border-slate-200 bg-white p-6 hover:border-blue-400 hover:bg-blue-50"
+        >
+          <h3 className="font-semibold">Claude API 利用状況</h3>
+          <p className="mt-1 text-sm text-slate-600">今月のコストと予算</p>
+        </Link>
       </section>
     </main>
   );

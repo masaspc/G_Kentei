@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.api_usage import router as api_usage_router
 from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.api.me import router as me_router
@@ -25,3 +26,4 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(me_router, prefix="/api")
 app.include_router(questions_router, prefix="/api")
 app.include_router(study_router, prefix="/api")
+app.include_router(api_usage_router, prefix="/api")

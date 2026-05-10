@@ -13,6 +13,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth.dependencies import get_current_user
 from app.db import get_db
 from app.db.models import Question
+from app.llm.explanation import generate_explanation
+from app.llm.usage import is_over_budget, log_usage
 from app.schemas.question import (
     ImportResult,
     QuestionCreate,
@@ -164,3 +166,41 @@ async def delete_question(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Question not found")
     await db.delete(question)
     await db.commit()
+
+
+@router.post("/{question_id}/generate-explanation", response_model=QuestionRead)
+async def generate_question_explanation(
+    question_id: int,
+    db: AsyncSession = Depends(get_db),
+    _: str = Depends(get_current_user),
+) -> Question:
+    question = await db.get(Question, question_id)
+    if question is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Question not found")
+
+    if await is_over_budget(db):
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            "Monthly Claude API budget exceeded",
+        )
+
+    try:
+        result = await generate_explanation(
+            question_text=question.question_text,
+            correct_answer=question.correct_answer,
+            category=question.syllabus_category,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE, str(exc)
+        ) from exc
+
+    await log_usage(
+        db, model=result.model, purpose="explanation", usage=result.usage
+    )
+
+    question.explanation = result.text
+    question.explanation_source = "claude_haiku"
+    await db.commit()
+    await db.refresh(question)
+    return question

@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     auth_password_hash: str = ""  # bcrypt hash; empty disables login
 
     anthropic_api_key: str = ""
+    anthropic_haiku_model: str = "claude-haiku-4-5"
+    anthropic_sonnet_model: str = "claude-sonnet-4-6"
+
+    monthly_api_budget_usd: float = 10.0  # hard stop for Claude spending
 
     cors_origins: list[str] = ["http://localhost:3000"]
 

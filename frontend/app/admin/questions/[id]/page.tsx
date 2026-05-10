@@ -16,6 +16,8 @@ export default function EditQuestionPage() {
   const id = Number(params.id);
   const [question, setQuestion] = useState<Question | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!ready || Number.isNaN(id)) return;
@@ -30,6 +32,21 @@ export default function EditQuestionPage() {
       }
     })();
   }, [ready, id]);
+
+  async function generateExplanation() {
+    setGenerating(true);
+    setGenerationError(null);
+    const res = await apiFetch(`/api/questions/${id}/generate-explanation`, {
+      method: "POST",
+    });
+    setGenerating(false);
+    if (!res.ok) {
+      const detail = await res.text();
+      setGenerationError(`生成に失敗しました (${res.status}): ${detail}`);
+      return;
+    }
+    setQuestion((await res.json()) as Question);
+  }
 
   async function handleSubmit(input: QuestionInput) {
     const res = await apiFetch(`/api/questions/${id}`, {
@@ -63,6 +80,31 @@ export default function EditQuestionPage() {
         ← 問題一覧
       </Link>
       <h1 className="mt-1 text-2xl font-bold">問題編集 #{question.id}</h1>
+
+      <div className="mt-4 rounded border border-slate-200 bg-slate-50 p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold">Claude で解説を生成</p>
+            <p className="text-xs text-slate-600">
+              Haiku 4.5 を呼び出して explanation を上書きします
+              {question.explanation_source &&
+                ` (現在: ${question.explanation_source})`}
+            </p>
+          </div>
+          <button
+            type="button"
+            disabled={generating}
+            onClick={generateExplanation}
+            className="rounded border border-slate-300 px-3 py-1 text-sm font-semibold hover:bg-slate-200 disabled:opacity-50"
+          >
+            {generating ? "生成中..." : "生成する"}
+          </button>
+        </div>
+        {generationError && (
+          <p className="mt-2 text-sm text-red-600">{generationError}</p>
+        )}
+      </div>
+
       <div className="mt-6">
         <QuestionForm
           initial={question}
