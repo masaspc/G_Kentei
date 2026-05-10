@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.api_usage import router as api_usage_router
 from app.api.auth import router as auth_router
 from app.api.bookmarks import router as bookmarks_router
+from app.api.chat import router as chat_router
 from app.api.health import router as health_router
 from app.api.me import router as me_router
 from app.api.questions import router as questions_router
@@ -33,3 +34,4 @@ app.include_router(api_usage_router, prefix="/api")
 app.include_router(stats_router, prefix="/api")
 app.include_router(terms_router, prefix="/api")
 app.include_router(bookmarks_router, prefix="/api")
+app.include_router(chat_router, prefix="/api")

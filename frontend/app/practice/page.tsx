@@ -506,6 +506,8 @@ function Judgement({
         </div>
       )}
 
+      <ChatPanel questionId={question.id} />
+
       <div className="mt-4 space-y-2">
         <p className="text-sm font-semibold">理解度の自己評価 (SRS)</p>
         <div className="grid grid-cols-4 gap-2">
@@ -547,6 +549,117 @@ function Judgement({
         </button>
       </div>
     </section>
+  );
+}
+
+type ChatTurn = { role: "user" | "assistant"; content: string };
+
+function ChatPanel({ questionId }: { questionId: number }) {
+  const [open, setOpen] = useState(false);
+  const [history, setHistory] = useState<ChatTurn[]>([]);
+  const [input, setInput] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setHistory([]);
+    setInput("");
+    setError(null);
+    setOpen(false);
+  }, [questionId]);
+
+  async function send() {
+    const message = input.trim();
+    if (!message) return;
+    setError(null);
+    setPending(true);
+    const userTurn: ChatTurn = { role: "user", content: message };
+    const nextHistory = [...history, userTurn];
+    setHistory(nextHistory);
+    setInput("");
+
+    const res = await apiFetch("/api/chat/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question_id: questionId,
+        history,
+        user_message: message,
+      }),
+    });
+    setPending(false);
+    if (!res.ok) {
+      const detail = await res.text();
+      setError(`応答に失敗 (${res.status}): ${detail}`);
+      return;
+    }
+    const data = (await res.json()) as { reply: string };
+    setHistory([...nextHistory, { role: "assistant", content: data.reply }]);
+  }
+
+  return (
+    <div className="mt-4 rounded border border-slate-200 bg-white">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full px-3 py-2 text-left text-sm font-semibold hover:bg-slate-50"
+      >
+        {open ? "▼" : "▶"} Claudeに質問
+      </button>
+      {open && (
+        <div className="border-t border-slate-200 p-3">
+          <div className="max-h-64 space-y-2 overflow-y-auto">
+            {history.length === 0 && (
+              <p className="text-xs text-slate-500">
+                この問題について Claude Sonnet 4.6 に質問できます。
+              </p>
+            )}
+            {history.map((turn, i) => (
+              <div
+                key={i}
+                className={`rounded p-2 text-sm ${
+                  turn.role === "user"
+                    ? "bg-blue-50"
+                    : "bg-slate-100"
+                }`}
+              >
+                <p className="text-xs font-semibold text-slate-500">
+                  {turn.role === "user" ? "あなた" : "Claude"}
+                </p>
+                <p className="whitespace-pre-wrap">{turn.content}</p>
+              </div>
+            ))}
+            {pending && (
+              <p className="text-xs text-slate-500">Claude が考えています...</p>
+            )}
+          </div>
+          <div className="mt-3 flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void send();
+                }
+              }}
+              placeholder="この問題について質問..."
+              className="flex-1 rounded border border-slate-300 px-3 py-2 text-sm"
+            />
+            <button
+              type="button"
+              onClick={() => void send()}
+              disabled={pending || input.trim() === ""}
+              className="rounded bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            >
+              送信
+            </button>
+          </div>
+          {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+        </div>
+      )}
+    </div>
   );
 }
 
