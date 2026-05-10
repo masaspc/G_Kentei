@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.dependencies import get_current_user
 from app.db import get_db
-from app.db.models import Question, SrsState, StudyLog
+from app.db.models import Bookmark, Question, SrsState, StudyLog
 from app.schemas.study import (
     DueCountResponse,
     EvaluateRequest,
@@ -40,6 +40,9 @@ async def start_session(
             SrsState.next_review_at <= func.now()
         )
         stmt = stmt.where(Question.id.in_(due))
+    elif payload.condition == "bookmarked":
+        bookmarked = select(Bookmark.question_id)
+        stmt = stmt.where(Question.id.in_(bookmarked))
 
     stmt = stmt.order_by(func.random()).limit(payload.limit)
     rows = (await db.execute(stmt)).scalars().all()

@@ -2,7 +2,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-SessionCondition = Literal["all", "unanswered", "srs_due"]
+SessionCondition = Literal["all", "unanswered", "srs_due", "bookmarked"]
 
 
 class StudySessionRequest(BaseModel):

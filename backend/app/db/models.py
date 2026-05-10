@@ -81,6 +81,19 @@ class SrsState(Base):
     )
 
 
+class Bookmark(Base):
+    __tablename__ = "bookmarks"
+
+    question_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("questions.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now()
+    )
+
+
 class Term(Base):
     __tablename__ = "terms"
 

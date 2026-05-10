@@ -194,6 +194,7 @@ export default function PracticePage() {
                 <option value="all">すべて</option>
                 <option value="unanswered">未回答のみ</option>
                 <option value="srs_due">SRS復習対象のみ</option>
+                <option value="bookmarked">ブックマーク済のみ</option>
               </select>
             </label>
           </div>
@@ -428,6 +429,27 @@ function Judgement({
   onNext: () => void;
   onEvaluate: (rating: SrsRating) => void;
 }) {
+  const [bookmarked, setBookmarked] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const res = await apiFetch("/api/bookmarks/ids");
+      if (res.ok) {
+        const ids = (await res.json()) as number[];
+        setBookmarked(ids.includes(question.id));
+      }
+    })();
+  }, [question.id]);
+
+  async function toggleBookmark() {
+    const method = bookmarked ? "DELETE" : "POST";
+    const res = await apiFetch(
+      `/api/questions/${question.id}/bookmark`,
+      { method },
+    );
+    if (res.ok) setBookmarked(!bookmarked);
+  }
+
   return (
     <section
       className={`mt-6 rounded-lg border p-4 ${
@@ -436,9 +458,22 @@ function Judgement({
           : "border-red-300 bg-red-50"
       }`}
     >
-      <p className="text-lg font-semibold">
-        {judgement.is_correct ? "○ 正解" : "× 不正解"}
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-lg font-semibold">
+          {judgement.is_correct ? "○ 正解" : "× 不正解"}
+        </p>
+        <button
+          type="button"
+          onClick={toggleBookmark}
+          className={`rounded border px-3 py-1 text-sm font-semibold ${
+            bookmarked
+              ? "border-yellow-400 bg-yellow-100 text-yellow-800"
+              : "border-slate-300 hover:bg-slate-100"
+          }`}
+        >
+          {bookmarked ? "★ ブックマーク済" : "☆ ブックマーク"}
+        </button>
+      </div>
 
       <p className="mt-2 text-sm">
         正解: <span className="font-mono">{formatAnswer(question, judgement.correct_answer)}</span>
