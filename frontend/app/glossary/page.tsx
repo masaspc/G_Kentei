@@ -41,7 +41,15 @@ export default function GlossaryPage() {
       <Link href="/" className="text-sm text-blue-600 hover:underline">
         ← ダッシュボード
       </Link>
-      <h1 className="mt-1 text-2xl font-bold">用語集・チートシート</h1>
+      <div className="mt-1 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">用語集・チートシート</h1>
+        <Link
+          href="/glossary/print"
+          className="text-sm text-blue-600 hover:underline"
+        >
+          印刷用ビュー →
+        </Link>
+      </div>
 
       <div className="mt-4 flex gap-2">
         <input

@@ -176,6 +176,13 @@ export default function Home() {
           </p>
         </Link>
         <Link
+          href="/stats/progress"
+          className="block rounded-lg border border-slate-200 bg-white p-6 hover:border-blue-400 hover:bg-blue-50"
+        >
+          <h3 className="font-semibold">学習進捗</h3>
+          <p className="mt-1 text-sm text-slate-600">過去60日の推移と累計</p>
+        </Link>
+        <Link
           href="/glossary"
           className="block rounded-lg border border-slate-200 bg-white p-6 hover:border-blue-400 hover:bg-blue-50"
         >

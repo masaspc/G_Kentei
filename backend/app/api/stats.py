@@ -13,6 +13,8 @@ from app.schemas.stats import (
     DashboardStats,
     HeatmapCell,
     HeatmapResponse,
+    ProgressPoint,
+    ProgressResponse,
 )
 
 router = APIRouter(prefix="/stats", tags=["stats"])
@@ -147,6 +149,50 @@ async def heatmap(
         for row in rows
     ]
     return HeatmapResponse(cells=cells)
+
+
+@router.get("/progress", response_model=ProgressResponse)
+async def progress(
+    days: int = 60,
+    db: AsyncSession = Depends(get_db),
+    _: str = Depends(get_current_user),
+) -> ProgressResponse:
+    days = max(1, min(days, 365))
+    cutoff = datetime.now(UTC) - timedelta(days=days - 1)
+
+    # Cumulative baseline = answers strictly before the window
+    baseline_stmt = select(func.count()).select_from(StudyLog).where(
+        StudyLog.studied_at < cutoff
+    )
+    cumulative = int((await db.execute(baseline_stmt)).scalar_one())
+
+    day_col = func.date_trunc("day", StudyLog.studied_at).label("day")
+    stmt = (
+        select(
+            day_col,
+            func.count().label("attempts"),
+            func.coalesce(
+                func.sum(case((StudyLog.is_correct.is_(True), 1), else_=0)), 0
+            ).label("correct"),
+        )
+        .where(StudyLog.studied_at >= cutoff)
+        .group_by(day_col)
+        .order_by(day_col)
+    )
+    rows = (await db.execute(stmt)).all()
+
+    points: list[ProgressPoint] = []
+    for row in rows:
+        cumulative += int(row.attempts)
+        points.append(
+            ProgressPoint(
+                day=row.day.date(),
+                attempts=int(row.attempts),
+                correct=int(row.correct),
+                cumulative_attempts=cumulative,
+            )
+        )
+    return ProgressResponse(points=points)
 
 
 async def _streak_days(db: AsyncSession, today_utc) -> int:

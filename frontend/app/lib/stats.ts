@@ -32,3 +32,14 @@ export type HeatmapCell = {
 export type HeatmapResponse = {
   cells: HeatmapCell[];
 };
+
+export type ProgressPoint = {
+  day: string;
+  attempts: number;
+  correct: number;
+  cumulative_attempts: number;
+};
+
+export type ProgressResponse = {
+  points: ProgressPoint[];
+};

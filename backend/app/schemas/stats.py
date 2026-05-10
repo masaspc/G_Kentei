@@ -36,3 +36,14 @@ class HeatmapCell(BaseModel):
 
 class HeatmapResponse(BaseModel):
     cells: list[HeatmapCell]
+
+
+class ProgressPoint(BaseModel):
+    day: date
+    attempts: int
+    correct: int
+    cumulative_attempts: int
+
+
+class ProgressResponse(BaseModel):
+    points: list[ProgressPoint]
