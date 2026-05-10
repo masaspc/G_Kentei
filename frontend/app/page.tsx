@@ -79,6 +79,13 @@ export default function Home() {
 
       <section className="mt-6 grid gap-3 sm:grid-cols-2">
         <Link
+          href="/practice"
+          className="block rounded-lg border border-slate-200 bg-white p-6 hover:border-blue-400 hover:bg-blue-50"
+        >
+          <h3 className="font-semibold">一問一答演習</h3>
+          <p className="mt-1 text-sm text-slate-600">分野・難易度を選んで演習</p>
+        </Link>
+        <Link
           href="/admin/questions"
           className="block rounded-lg border border-slate-200 bg-white p-6 hover:border-blue-400 hover:bg-blue-50"
         >

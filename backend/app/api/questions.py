@@ -68,6 +68,20 @@ async def list_questions(
     )
 
 
+@router.get("/categories", response_model=list[str])
+async def list_categories(
+    db: AsyncSession = Depends(get_db),
+    _: str = Depends(get_current_user),
+) -> list[str]:
+    stmt = (
+        select(Question.syllabus_category)
+        .distinct()
+        .order_by(Question.syllabus_category)
+    )
+    rows = (await db.execute(stmt)).scalars().all()
+    return list(rows)
+
+
 @router.post("/import", response_model=ImportResult)
 async def import_questions_endpoint(
     file: UploadFile = File(...),
