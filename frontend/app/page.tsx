@@ -1,29 +1,69 @@
-type HealthResponse = { status: string };
+"use client";
 
-async function fetchHealth(): Promise<HealthResponse> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
-  try {
-    const res = await fetch(`${baseUrl}/api/health`, { cache: "no-store" });
-    if (!res.ok) return { status: "error" };
-    return (await res.json()) as HealthResponse;
-  } catch {
-    return { status: "unreachable" };
-  }
-}
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export default async function Home() {
-  const health = await fetchHealth();
+import { apiFetch, clearToken, getToken } from "./lib/api";
+
+type Me = { username: string };
+type Health = { status: string };
+
+export default function Home() {
+  const router = useRouter();
+  const [me, setMe] = useState<Me | null>(null);
+  const [health, setHealth] = useState<Health>({ status: "loading" });
+
+  useEffect(() => {
+    if (!getToken()) {
+      router.replace("/login");
+      return;
+    }
+
+    (async () => {
+      const meRes = await apiFetch("/api/me");
+      if (!meRes.ok) {
+        clearToken();
+        router.replace("/login");
+        return;
+      }
+      setMe((await meRes.json()) as Me);
+
+      const healthRes = await apiFetch("/api/health");
+      if (healthRes.ok) {
+        setHealth((await healthRes.json()) as Health);
+      } else {
+        setHealth({ status: "error" });
+      }
+    })();
+  }, [router]);
+
+  if (!me) return null;
+
   const examDate = new Date("2026-07-04");
   const daysLeft = Math.ceil(
     (examDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
   );
 
+  function logout() {
+    clearToken();
+    router.replace("/login");
+  }
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-3xl font-bold">G検定攻略サイト</h1>
-      <p className="mt-2 text-slate-600">
-        G検定 2026 #4 に向けた個人学習プラットフォーム (Phase 0 skeleton)
-      </p>
+      <header className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">G検定攻略サイト</h1>
+        <div className="flex items-center gap-3 text-sm text-slate-600">
+          <span>{me.username}</span>
+          <button
+            type="button"
+            onClick={logout}
+            className="rounded border border-slate-300 px-3 py-1 hover:bg-slate-100"
+          >
+            ログアウト
+          </button>
+        </div>
+      </header>
 
       <section className="mt-8 rounded-lg border border-slate-200 bg-white p-6">
         <h2 className="text-xl font-semibold">試験まで</h2>

@@ -33,6 +33,8 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       REDIS_URL: ${REDIS_URL}
       JWT_SECRET: ${JWT_SECRET}
+      AUTH_USERNAME: ${AUTH_USERNAME:-admin}
+      AUTH_PASSWORD_HASH: ${AUTH_PASSWORD_HASH}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     depends_on:
       postgres:

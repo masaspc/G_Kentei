@@ -8,7 +8,14 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+asyncpg://g_kentei:change_me@postgres:5432/g_kentei"
     redis_url: str = "redis://redis:6379/0"
+
     jwt_secret: str = "change_me"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 60 * 24 * 7  # 7 days
+
+    auth_username: str = "admin"
+    auth_password_hash: str = ""  # bcrypt hash; empty disables login
+
     anthropic_api_key: str = ""
 
     cors_origins: list[str] = ["http://localhost:3000"]
