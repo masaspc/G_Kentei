@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -74,6 +75,16 @@ export default function Home() {
       <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
         <h2 className="text-xl font-semibold">バックエンド接続</h2>
         <p className="mt-2 font-mono text-sm">status: {health.status}</p>
+      </section>
+
+      <section className="mt-6 grid gap-3 sm:grid-cols-2">
+        <Link
+          href="/admin/questions"
+          className="block rounded-lg border border-slate-200 bg-white p-6 hover:border-blue-400 hover:bg-blue-50"
+        >
+          <h3 className="font-semibold">問題管理</h3>
+          <p className="mt-1 text-sm text-slate-600">問題の作成・編集・削除</p>
+        </Link>
       </section>
     </main>
   );
