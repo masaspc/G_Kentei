@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { apiFetch, clearToken, getToken } from "./lib/api";
+import { DashboardStats } from "./lib/stats";
 
 type Me = { username: string };
-type Health = { status: string };
 
 export default function Home() {
   const router = useRouter();
   const [me, setMe] = useState<Me | null>(null);
-  const [health, setHealth] = useState<Health>({ status: "loading" });
+  const [stats, setStats] = useState<DashboardStats | null>(null);
 
   useEffect(() => {
     if (!getToken()) {
@@ -29,12 +29,8 @@ export default function Home() {
       }
       setMe((await meRes.json()) as Me);
 
-      const healthRes = await apiFetch("/api/health");
-      if (healthRes.ok) {
-        setHealth((await healthRes.json()) as Health);
-      } else {
-        setHealth({ status: "error" });
-      }
+      const statsRes = await apiFetch("/api/stats/dashboard");
+      if (statsRes.ok) setStats((await statsRes.json()) as DashboardStats);
     })();
   }, [router]);
 
@@ -50,8 +46,12 @@ export default function Home() {
     router.replace("/login");
   }
 
+  const maxDaily = stats
+    ? Math.max(1, ...stats.daily_7d.map((d) => d.attempts))
+    : 1;
+
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <main className="mx-auto max-w-5xl px-6 py-10">
       <header className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">G検定攻略サイト</h1>
         <div className="flex items-center gap-3 text-sm text-slate-600">
@@ -66,16 +66,97 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="mt-8 rounded-lg border border-slate-200 bg-white p-6">
-        <h2 className="text-xl font-semibold">試験まで</h2>
-        <p className="mt-2 text-4xl font-bold text-blue-600">残り {daysLeft} 日</p>
-        <p className="mt-1 text-sm text-slate-500">2026年7月4日 実施</p>
+      <section className="mt-8 grid gap-4 sm:grid-cols-3">
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <p className="text-xs uppercase tracking-wide text-slate-500">
+            試験まで
+          </p>
+          <p className="mt-2 text-4xl font-bold text-blue-600">{daysLeft} 日</p>
+          <p className="mt-1 text-xs text-slate-500">2026年7月4日</p>
+        </div>
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <p className="text-xs uppercase tracking-wide text-slate-500">
+            SRS復習対象
+          </p>
+          <p className="mt-2 text-4xl font-bold">
+            {stats?.due_today ?? "—"}
+          </p>
+          <p className="mt-1 text-xs text-slate-500">本日復習が必要な問題</p>
+        </div>
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <p className="text-xs uppercase tracking-wide text-slate-500">
+            学習ストリーク
+          </p>
+          <p className="mt-2 text-4xl font-bold">
+            {stats?.streak_days ?? "—"} 日
+          </p>
+          <p className="mt-1 text-xs text-slate-500">連続学習日数</p>
+        </div>
       </section>
 
-      <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
-        <h2 className="text-xl font-semibold">バックエンド接続</h2>
-        <p className="mt-2 font-mono text-sm">status: {health.status}</p>
+      <section className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <p className="text-xs uppercase tracking-wide text-slate-500">
+            累計回答数
+          </p>
+          <p className="mt-2 text-3xl font-bold">
+            {stats?.total_attempts ?? "—"}
+          </p>
+          <p className="mt-1 text-xs text-slate-500">
+            登録問題 {stats?.total_questions ?? "—"} 問
+          </p>
+        </div>
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <p className="text-xs uppercase tracking-wide text-slate-500">
+            累計正答率
+          </p>
+          <p className="mt-2 text-3xl font-bold">
+            {stats ? (stats.overall_accuracy * 100).toFixed(1) : "—"}%
+          </p>
+        </div>
       </section>
+
+      {stats && stats.daily_7d.length > 0 && (
+        <section className="mt-6 rounded-lg border border-slate-200 bg-white p-5">
+          <p className="text-sm font-semibold">直近7日の回答数</p>
+          <div className="mt-3 flex items-end gap-2">
+            {stats.daily_7d.map((d) => (
+              <div key={d.day} className="flex-1 text-center">
+                <div
+                  className="mx-auto w-full rounded-t bg-blue-500"
+                  style={{
+                    height: `${Math.max(4, (d.attempts / maxDaily) * 80)}px`,
+                  }}
+                  title={`${d.day}: ${d.correct}/${d.attempts}`}
+                />
+                <p className="mt-1 text-xs text-slate-500">
+                  {d.day.slice(5)}
+                </p>
+                <p className="text-xs font-mono">{d.attempts}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {stats && stats.weak_categories.length > 0 && (
+        <section className="mt-6 rounded-lg border border-slate-200 bg-white p-5">
+          <p className="text-sm font-semibold">弱点分野トップ 3</p>
+          <ul className="mt-3 space-y-2 text-sm">
+            {stats.weak_categories.map((c) => (
+              <li
+                key={c.category}
+                className="flex items-center justify-between border-b border-slate-100 pb-1"
+              >
+                <span>{c.category}</span>
+                <span className="text-slate-600">
+                  {(c.accuracy * 100).toFixed(1)}% ({c.correct}/{c.attempts})
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="mt-6 grid gap-3 sm:grid-cols-2">
         <Link
@@ -84,6 +165,15 @@ export default function Home() {
         >
           <h3 className="font-semibold">一問一答演習</h3>
           <p className="mt-1 text-sm text-slate-600">分野・難易度を選んで演習</p>
+        </Link>
+        <Link
+          href="/stats/heatmap"
+          className="block rounded-lg border border-slate-200 bg-white p-6 hover:border-blue-400 hover:bg-blue-50"
+        >
+          <h3 className="font-semibold">弱点ヒートマップ</h3>
+          <p className="mt-1 text-sm text-slate-600">
+            分野 × 難易度の正答率
+          </p>
         </Link>
         <Link
           href="/admin/questions"
