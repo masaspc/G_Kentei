@@ -22,6 +22,9 @@ class Settings(BaseSettings):
 
     monthly_api_budget_usd: float = 10.0  # hard stop for Claude spending
 
+    discord_webhook_url: str = ""
+    notification_webhook_secret: str = ""
+
     cors_origins: list[str] = ["http://localhost:3000"]
 
 
