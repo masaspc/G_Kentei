@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from math import ceil
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func, select
@@ -45,9 +46,12 @@ async def start_exam(
     await db.commit()
     await db.refresh(session)
 
+    time_limit_seconds = ceil(len(questions) * 100 * 60 / 145)
+
     return ExamStartResponse(
         exam_session_id=session.id,
         started_at=session.started_at,
+        time_limit_seconds=time_limit_seconds,
         items=[ExamQuestion.model_validate(q) for q in questions],
     )
 
@@ -62,15 +66,11 @@ async def submit_exam(
     if session is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Exam session not found")
     if session.completed_at is not None:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, "Exam already submitted"
-        )
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Exam already submitted")
 
     question_ids = [a.question_id for a in payload.answers]
     if not question_ids:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, "No answers provided"
-        )
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "No answers provided")
 
     questions_stmt = select(Question).where(Question.id.in_(question_ids))
     questions = (await db.execute(questions_stmt)).scalars().all()

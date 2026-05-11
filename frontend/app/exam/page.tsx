@@ -26,6 +26,14 @@ export default function ExamPage() {
   const startedAtRef = useRef<number>(0);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const queryTotal = Number(params.get("totalQuestions"));
+    if (Number.isInteger(queryTotal) && queryTotal >= 1 && queryTotal <= 200) {
+      setTotalQuestions(queryTotal);
+    }
+  }, []);
+
+  useEffect(() => {
     if (mode !== "active") return;
     const id = setInterval(() => {
       const elapsed = Math.floor((Date.now() - startedAtRef.current) / 1000);
@@ -117,7 +125,8 @@ export default function ExamPage() {
         </Link>
         <h1 className="mt-1 text-2xl font-bold">模擬試験</h1>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-          本番再現: 145問・100分・中断不可。開始すると即座にタイマーが動き出します。
+          本番再現:
+          145問・100分・中断不可。開始すると即座にタイマーが動き出します。
         </p>
 
         <div className="mt-6 rounded border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
@@ -150,19 +159,27 @@ export default function ExamPage() {
     <main className="mx-auto max-w-4xl px-6 py-6">
       <header className="sticky top-0 z-10 -mx-6 flex items-center justify-between gap-2 border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 px-4 py-3 sm:px-6">
         <div className="min-w-0">
-          <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">残り時間</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            残り時間
+          </p>
           <p
             className={`text-xl font-bold sm:text-2xl ${
               remaining <= 300 ? "text-red-600" : ""
             }`}
           >
-            {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+            {String(minutes).padStart(2, "0")}:
+            {String(seconds).padStart(2, "0")}
           </p>
         </div>
         <div className="min-w-0 text-center">
-          <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">解答済</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            解答済
+          </p>
           <p className="text-xl font-bold sm:text-2xl">
-            {answeredCount}<span className="text-sm text-slate-500 dark:text-slate-400">/{items.length}</span>
+            {answeredCount}
+            <span className="text-sm text-slate-500 dark:text-slate-400">
+              /{items.length}
+            </span>
           </p>
         </div>
         <button
@@ -185,10 +202,12 @@ export default function ExamPage() {
 
       <section className="mt-6">
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          問題 {index + 1} / {items.length} ・ {current.syllabus_category} ・ 難易度{" "}
-          {current.difficulty}
+          問題 {index + 1} / {items.length} ・ {current.syllabus_category} ・
+          難易度 {current.difficulty}
         </p>
-        <p className="mt-3 whitespace-pre-wrap text-lg">{current.question_text}</p>
+        <p className="mt-3 whitespace-pre-wrap text-lg">
+          {current.question_text}
+        </p>
 
         <div className="mt-4">
           <ExamAnswerInput
@@ -209,9 +228,7 @@ export default function ExamPage() {
           </button>
           <button
             type="button"
-            onClick={() =>
-              setIndex((i) => Math.min(items.length - 1, i + 1))
-            }
+            onClick={() => setIndex((i) => Math.min(items.length - 1, i + 1))}
             disabled={index === items.length - 1}
             className="rounded border border-slate-300 dark:border-slate-600 px-3 py-1 text-sm hover:bg-slate-100 dark:bg-slate-700 disabled:opacity-50"
           >

@@ -22,7 +22,7 @@ export type StudyAnswerResponse = {
   reference_links: string[];
 };
 
-export type SessionCondition = "all" | "unanswered" | "srs_due";
+export type SessionCondition = "all" | "unanswered" | "srs_due" | "bookmarked";
 
 export type SrsRating = 0 | 1 | 2 | 3;
 

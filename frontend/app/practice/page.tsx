@@ -35,6 +35,24 @@ export default function PracticePage() {
   const [selected, setSelected] = useState<unknown>(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const queryCategory = params.get("category");
+    const queryCondition = params.get("condition");
+    const queryLimit = Number(params.get("limit"));
+
+    if (queryCategory) setCategory(queryCategory);
+    if (
+      queryCondition === "all" ||
+      queryCondition === "unanswered" ||
+      queryCondition === "srs_due" ||
+      queryCondition === "bookmarked"
+    ) {
+      setCondition(queryCondition);
+    }
+    if ([10, 20, 50, 100].includes(queryLimit)) setLimit(queryLimit);
+  }, []);
+
+  useEffect(() => {
     if (!ready) return;
     (async () => {
       const res = await apiFetch("/api/questions/categories");
@@ -173,7 +191,9 @@ export default function PracticePage() {
               <select
                 value={difficulty}
                 onChange={(e) =>
-                  setDifficulty(e.target.value === "" ? "" : Number(e.target.value))
+                  setDifficulty(
+                    e.target.value === "" ? "" : Number(e.target.value),
+                  )
                 }
                 className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
               >
@@ -188,7 +208,9 @@ export default function PracticePage() {
               <span className="text-sm font-medium">出題条件</span>
               <select
                 value={condition}
-                onChange={(e) => setCondition(e.target.value as SessionCondition)}
+                onChange={(e) =>
+                  setCondition(e.target.value as SessionCondition)
+                }
                 className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
               >
                 <option value="all">すべて</option>
@@ -265,10 +287,12 @@ function Session({
   return (
     <section className="mt-6">
       <p className="text-sm text-slate-600 dark:text-slate-400">
-        {index + 1} / {questions.length} ・ {question.syllabus_category} ・ 難易度{" "}
-        {question.difficulty}
+        {index + 1} / {questions.length} ・ {question.syllabus_category} ・
+        難易度 {question.difficulty}
       </p>
-      <p className="mt-3 whitespace-pre-wrap text-lg">{question.question_text}</p>
+      <p className="mt-3 whitespace-pre-wrap text-lg">
+        {question.question_text}
+      </p>
 
       <div className="mt-4">
         <AnswerInput
@@ -443,10 +467,9 @@ function Judgement({
 
   async function toggleBookmark() {
     const method = bookmarked ? "DELETE" : "POST";
-    const res = await apiFetch(
-      `/api/questions/${question.id}/bookmark`,
-      { method },
-    );
+    const res = await apiFetch(`/api/questions/${question.id}/bookmark`, {
+      method,
+    });
     if (res.ok) setBookmarked(!bookmarked);
   }
 
@@ -471,18 +494,26 @@ function Judgement({
               : "border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:bg-slate-700"
           }`}
         >
-          {bookmarked ? "★" : "☆"}<span className="ml-1 hidden sm:inline">{bookmarked ? "ブックマーク済" : "ブックマーク"}</span>
+          {bookmarked ? "★" : "☆"}
+          <span className="ml-1 hidden sm:inline">
+            {bookmarked ? "ブックマーク済" : "ブックマーク"}
+          </span>
         </button>
       </div>
 
       <p className="mt-2 text-sm">
-        正解: <span className="font-mono">{formatAnswer(question, judgement.correct_answer)}</span>
+        正解:{" "}
+        <span className="font-mono">
+          {formatAnswer(question, judgement.correct_answer)}
+        </span>
       </p>
 
       {judgement.explanation && (
         <div className="mt-3">
           <p className="text-sm font-semibold">解説</p>
-          <p className="mt-1 whitespace-pre-wrap text-sm">{judgement.explanation}</p>
+          <p className="mt-1 whitespace-pre-wrap text-sm">
+            {judgement.explanation}
+          </p>
         </div>
       )}
 
@@ -687,7 +718,9 @@ function ChatPanel({ questionId }: { questionId: number }) {
               </div>
             ))}
             {pending && (
-              <p className="text-xs text-slate-500 dark:text-slate-400">Claude が考えています...</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Claude が考えています...
+              </p>
             )}
           </div>
           <div className="mt-3 flex gap-2">
@@ -765,10 +798,15 @@ function Summary({
       </div>
 
       <details className="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-4">
-        <summary className="cursor-pointer text-sm font-semibold">問題一覧</summary>
+        <summary className="cursor-pointer text-sm font-semibold">
+          問題一覧
+        </summary>
         <ul className="mt-3 space-y-2 text-sm">
           {records.map((r, i) => (
-            <li key={r.question.id} className="border-b border-slate-100 dark:border-slate-700 pb-2">
+            <li
+              key={r.question.id}
+              className="border-b border-slate-100 dark:border-slate-700 pb-2"
+            >
               <span className="font-mono">
                 {i + 1}. {r.result.is_correct ? "○" : "×"}
               </span>{" "}
