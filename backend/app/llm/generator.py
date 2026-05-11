@@ -85,6 +85,7 @@ async def generate_question(
     category: str,
     difficulty: int,
     question_type: str = "single",
+    model_choice: str = "sonnet",
     client: AsyncAnthropic | None = None,
 ) -> GenerationResult:
     settings = get_settings()
@@ -92,7 +93,11 @@ async def generate_question(
         raise RuntimeError("ANTHROPIC_API_KEY is not configured")
 
     sdk = client or AsyncAnthropic(api_key=settings.anthropic_api_key)
-    model = settings.anthropic_sonnet_model
+    model = (
+        settings.anthropic_haiku_model
+        if model_choice == "haiku"
+        else settings.anthropic_sonnet_model
+    )
 
     response = await sdk.messages.create(
         model=model,

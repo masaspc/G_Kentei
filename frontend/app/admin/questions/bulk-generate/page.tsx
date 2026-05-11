@@ -51,12 +51,15 @@ type GenerateResponse = {
   tags: string[];
 };
 
+type ModelChoice = "sonnet" | "haiku";
+
 export default function BulkGeneratePage() {
   const ready = useRequireAuth();
   const [selected, setSelected] = useState<Set<string>>(
     () => new Set(SUB_CATEGORIES.map((c) => c.subcategory)),
   );
   const [perCategory, setPerCategory] = useState(3);
+  const [model, setModel] = useState<ModelChoice>("sonnet");
   const [running, setRunning] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [succeeded, setSucceeded] = useState(0);
@@ -143,6 +146,7 @@ export default function BulkGeneratePage() {
             category: p.syllabus_category,
             difficulty: p.difficulty,
             question_type: p.question_type,
+            model,
           }),
         });
         if (!genRes.ok) {
@@ -160,13 +164,13 @@ export default function BulkGeneratePage() {
             choices: draft.choices,
             correct_answer: draft.correct_answer,
             explanation: draft.explanation,
-            explanation_source: "claude_sonnet",
+            explanation_source: model === "haiku" ? "claude_haiku" : "claude_sonnet",
             syllabus_category: p.syllabus_category,
             subcategory: p.subcategory,
             difficulty: p.difficulty,
             tags: draft.tags ?? [],
             reference_links: [],
-            source: "Claude 自動生成 (Web UI)",
+            source: `Claude ${model === "haiku" ? "Haiku 4.5" : "Sonnet 4.6"} (Web UI 一括生成)`,
             is_active: true,
           }),
         });
@@ -242,7 +246,7 @@ export default function BulkGeneratePage() {
           ))}
         </div>
 
-        <div className="mt-4 flex items-center gap-3 text-sm dark:text-slate-200">
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm dark:text-slate-200">
           <label className="flex items-center gap-2">
             <span>1分野あたりの問題数:</span>
             <select
@@ -256,10 +260,27 @@ export default function BulkGeneratePage() {
               <option value={3}>3問 (4択 難度1+2 ＋ ◯×難度2)</option>
             </select>
           </label>
+          <label className="flex items-center gap-2">
+            <span>モデル:</span>
+            <select
+              disabled={running}
+              value={model}
+              onChange={(e) => setModel(e.target.value as ModelChoice)}
+              className="rounded border border-slate-300 dark:border-slate-600 dark:bg-slate-800 px-2 py-1"
+            >
+              <option value="sonnet">Sonnet 4.6 (高品質・高コスト)</option>
+              <option value="haiku">Haiku 4.5 (高速・低コスト)</option>
+            </select>
+          </label>
           <span className="ml-auto text-xs text-slate-500 dark:text-slate-400">
             合計 {total} 問を生成
           </span>
         </div>
+        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+          {model === "haiku"
+            ? "Haiku 4.5: Sonnet の約 1/5 程度の単価。多数生成や下書き量産向き。問題品質はやや劣る場合があるため後で確認を。"
+            : "Sonnet 4.6: 推奨。本番投入できる品質の問題が期待できる。"}
+        </p>
       </section>
 
       <div className="mt-4 flex gap-3">

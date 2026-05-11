@@ -102,6 +102,7 @@ async def generate_draft(
             category=payload.category,
             difficulty=payload.difficulty,
             question_type=payload.question_type,
+            model_choice=payload.model,
         )
     except RuntimeError as exc:
         raise HTTPException(
@@ -118,6 +119,7 @@ async def generate_draft(
         correct_answer=q.correct_answer,
         explanation=q.explanation,
         tags=q.tags,
+        model=payload.model,
     )
 
 

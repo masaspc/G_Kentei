@@ -25,6 +25,7 @@ export default function NewQuestionPage() {
   const [genCategory, setGenCategory] = useState("");
   const [genDifficulty, setGenDifficulty] = useState(2);
   const [genType, setGenType] = useState<QuestionType>("single");
+  const [genModel, setGenModel] = useState<"sonnet" | "haiku">("sonnet");
   const [generating, setGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
 
@@ -51,6 +52,7 @@ export default function NewQuestionPage() {
         category: genCategory,
         difficulty: genDifficulty,
         question_type: genType,
+        model: genModel,
       }),
     });
     setGenerating(false);
@@ -66,13 +68,13 @@ export default function NewQuestionPage() {
       choices: data.choices,
       correct_answer: data.correct_answer,
       explanation: data.explanation,
-      explanation_source: "claude_sonnet",
+      explanation_source: genModel === "haiku" ? "claude_haiku" : "claude_sonnet",
       syllabus_category: genCategory,
       difficulty: genDifficulty,
       tags: data.tags,
       reference_links: [],
       subcategory: null,
-      source: "Claude Sonnet 4.6",
+      source: genModel === "haiku" ? "Claude Haiku 4.5" : "Claude Sonnet 4.6",
       is_active: true,
     });
   }
@@ -89,9 +91,9 @@ export default function NewQuestionPage() {
       <section className="mt-6 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
         <p className="text-sm font-semibold">Claude で下書きを生成</p>
         <p className="text-xs text-slate-600 dark:text-slate-400">
-          Sonnet 4.6 が生成した内容は必ず確認・修正してから保存してください。
+          生成した内容は必ず確認・修正してから保存してください。
         </p>
-        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        <div className="mt-3 grid gap-2 sm:grid-cols-4">
           <input
             type="text"
             value={genCategory}
@@ -117,6 +119,14 @@ export default function NewQuestionPage() {
             <option value="multi">複数選択</option>
             <option value="true_false">○×</option>
             <option value="fill_blank">穴埋め</option>
+          </select>
+          <select
+            value={genModel}
+            onChange={(e) => setGenModel(e.target.value as "sonnet" | "haiku")}
+            className="rounded border border-slate-300 dark:border-slate-600 px-2 py-1 text-sm"
+          >
+            <option value="sonnet">Sonnet 4.6</option>
+            <option value="haiku">Haiku 4.5</option>
           </select>
         </div>
         <button

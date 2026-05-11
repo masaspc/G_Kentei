@@ -4,11 +4,14 @@ from pydantic import BaseModel, Field
 
 from app.schemas.question import QuestionType
 
+ModelChoice = Literal["sonnet", "haiku"]
+
 
 class GenerateQuestionRequest(BaseModel):
     category: str = Field(min_length=1, max_length=100)
     difficulty: int = Field(default=2, ge=1, le=3)
     question_type: QuestionType = "single"
+    model: ModelChoice = "sonnet"
 
 
 class GenerateQuestionResponse(BaseModel):
@@ -18,3 +21,4 @@ class GenerateQuestionResponse(BaseModel):
     correct_answer: Any
     explanation: str
     tags: list[str]
+    model: ModelChoice = "sonnet"
