@@ -158,3 +158,20 @@ class ApiUsageLog(Base):
     called_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now(), index=True
     )
+
+
+class ReferenceArticle(Base):
+    __tablename__ = "reference_articles"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    title: Mapped[str] = mapped_column(String(200))
+    syllabus_category: Mapped[str] = mapped_column(String(100), index=True)
+    content: Mapped[str] = mapped_column(Text, server_default="")
+    order_num: Mapped[int] = mapped_column(Integer, server_default="0")
+    is_published: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now()
+    )

@@ -1,3 +1,19 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* Markdown article prose */
+.prose-custom { @apply text-slate-800 dark:text-slate-200 leading-relaxed; }
+.prose-custom h1 { @apply text-2xl font-bold mt-8 mb-3 dark:text-slate-100; }
+.prose-custom h2 { @apply text-xl font-bold mt-6 mb-2 dark:text-slate-100; }
+.prose-custom h3 { @apply text-lg font-semibold mt-5 mb-2 dark:text-slate-100; }
+.prose-custom p  { @apply mt-3; }
+.prose-custom ul { @apply mt-3 list-disc pl-6 space-y-1; }
+.prose-custom ol { @apply mt-3 list-decimal pl-6 space-y-1; }
+.prose-custom li { @apply text-slate-700 dark:text-slate-300; }
+.prose-custom strong { @apply font-semibold; }
+.prose-custom code { @apply rounded bg-slate-100 dark:bg-slate-700 px-1 py-0.5 font-mono text-sm; }
+.prose-custom pre  { @apply mt-3 overflow-x-auto rounded bg-slate-900 p-4 text-sm text-slate-100; }
+.prose-custom pre code { @apply bg-transparent p-0; }
+.prose-custom blockquote { @apply mt-3 border-l-4 border-blue-400 pl-4 italic text-slate-600 dark:text-slate-400; }
+.prose-custom hr  { @apply my-6 border-slate-200 dark:border-slate-700; }

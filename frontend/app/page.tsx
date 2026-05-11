@@ -220,6 +220,13 @@ export default function Home() {
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">学習履歴を CSV で保存</p>
         </Link>
         <Link
+          href="/reference"
+          className="block rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6 hover:border-blue-400 hover:bg-blue-50 dark:hover:border-blue-500 dark:hover:bg-slate-700"
+        >
+          <h3 className="font-semibold">参考書コーナー</h3>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">シラバス分野別の解説記事</p>
+        </Link>
+        <Link
           href="/admin/notifications"
           className="block rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6 hover:border-blue-400 hover:bg-blue-50 dark:hover:border-blue-500 dark:hover:bg-slate-700"
         >

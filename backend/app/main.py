@@ -12,6 +12,7 @@ from app.api.me import router as me_router
 from app.api.notes import router as notes_router
 from app.api.notifications import router as notifications_router
 from app.api.questions import router as questions_router
+from app.api.reference import router as reference_router
 from app.api.stats import router as stats_router
 from app.api.study import router as study_router
 from app.api.terms import router as terms_router
@@ -43,3 +44,4 @@ app.include_router(exam_router, prefix="/api")
 app.include_router(notes_router, prefix="/api")
 app.include_router(export_router, prefix="/api")
 app.include_router(notifications_router, prefix="/api")
+app.include_router(reference_router, prefix="/api")
