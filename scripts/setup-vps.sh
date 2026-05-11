@@ -2,7 +2,7 @@
 # G検定攻略サイト — ConoHa VPS 一発セットアップスクリプト
 #
 # 対象: Ubuntu 22.04 / 24.04 (ConoHa VPS の標準イメージ)
-# 必要: sudo 権限のあるユーザーで実行
+# 必要: root または sudo 権限のあるユーザーで実行 (ConoHa 標準は root でOK)
 #
 # 実行例:
 #   git clone https://github.com/masaspc/G_Kentei.git
@@ -25,52 +25,58 @@ error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
 # ---------- 1. 前提チェック ----------
 if [[ "$EUID" -eq 0 ]]; then
-  error "root では実行しないでください。一般ユーザー (sudo 権限あり) で実行してください。"
-  exit 1
-fi
-if ! sudo -n true 2>/dev/null; then
-  info "sudo パスワードを要求します。"
-  sudo -v
+  warn "root ユーザーで実行しています。"
+  warn "本番運用ではセキュリティ上、一般ユーザー (sudo 権限) での実行を推奨しますが、"
+  warn "簡易セットアップのため root のまま続行します。"
+  SUDO=""
+else
+  if ! sudo -n true 2>/dev/null; then
+    info "sudo パスワードを要求します。"
+    sudo -v
+  fi
+  SUDO="sudo"
 fi
 
 # ---------- 2. apt 更新 + 必要パッケージ ----------
 info "apt パッケージを更新中..."
-sudo apt-get update -y
-sudo apt-get install -y ca-certificates curl gnupg ufw openssl
+$SUDO apt-get update -y
+$SUDO apt-get install -y ca-certificates curl gnupg ufw openssl
 
 # ---------- 3. Docker インストール ----------
 if ! command -v docker >/dev/null 2>&1; then
   info "Docker をインストール中..."
-  sudo install -m 0755 -d /etc/apt/keyrings
+  $SUDO install -m 0755 -d /etc/apt/keyrings
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
-    sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-  sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    $SUDO gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  $SUDO chmod a+r /etc/apt/keyrings/docker.gpg
 
   CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
 https://download.docker.com/linux/ubuntu $CODENAME stable" | \
-    sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+    $SUDO tee /etc/apt/sources.list.d/docker.list >/dev/null
 
-  sudo apt-get update -y
-  sudo apt-get install -y docker-ce docker-ce-cli containerd.io \
+  $SUDO apt-get update -y
+  $SUDO apt-get install -y docker-ce docker-ce-cli containerd.io \
     docker-buildx-plugin docker-compose-plugin
 
-  sudo usermod -aG docker "$USER"
-  warn "現在のユーザーを docker グループに追加しました。"
-  warn "このスクリプト終了後、再ログインまたは 'newgrp docker' を実行してください。"
+  if [[ "$EUID" -ne 0 ]]; then
+    $SUDO usermod -aG docker "$USER"
+    warn "現在のユーザーを docker グループに追加しました。"
+    warn "このスクリプト終了後、再ログインまたは 'newgrp docker' を実行してください。"
+  fi
 else
   info "Docker は既にインストールされています。"
 fi
 
 # ---------- 4. ファイアウォール (UFW) ----------
 info "UFW を設定中 (22/tcp, 80/tcp, 443/tcp を開放)..."
-sudo ufw --force reset >/dev/null
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw allow 22/tcp
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw --force enable
+$SUDO ufw --force reset >/dev/null
+$SUDO ufw default deny incoming
+$SUDO ufw default allow outgoing
+$SUDO ufw allow 22/tcp
+$SUDO ufw allow 80/tcp
+$SUDO ufw allow 443/tcp
+$SUDO ufw --force enable
 
 # ---------- 5. .env 生成 ----------
 ENV_FILE="$REPO_ROOT/.env"
@@ -163,7 +169,7 @@ info ".env を $ENV_FILE に書き出しました (パーミッション 600)。
 info "Docker イメージをビルドして起動します (数分かかります)..."
 COMPOSE="docker compose -f docker-compose.yml -f docker-compose.prod.yml"
 
-if ! groups "$USER" | grep -q '\bdocker\b'; then
+if [[ "$EUID" -ne 0 ]] && ! groups "$USER" | grep -q '\bdocker\b'; then
   warn "docker グループ未反映のため sudo で実行します。"
   COMPOSE="sudo $COMPOSE"
 fi

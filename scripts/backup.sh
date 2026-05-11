@@ -10,7 +10,7 @@ OUT_DIR=${1:-./backups}
 mkdir -p "$OUT_DIR"
 
 COMPOSE="docker compose -f docker-compose.yml -f docker-compose.prod.yml"
-if ! groups "$USER" 2>/dev/null | grep -q '\bdocker\b'; then
+if [[ "$EUID" -ne 0 ]] && ! groups "$USER" 2>/dev/null | grep -q '\bdocker\b'; then
   COMPOSE="sudo $COMPOSE"
 fi
 
