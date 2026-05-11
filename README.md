@@ -30,6 +30,18 @@ docker compose up --build
 - Backend API: http://localhost:8000
 - API Docs (Swagger): http://localhost:8000/docs
 
+## 本番デプロイ (ConoHa VPS)
+
+ワンコマンドでセットアップできます:
+
+```bash
+git clone https://github.com/masaspc/G_Kentei.git
+cd G_Kentei
+bash scripts/setup-vps.sh
+```
+
+詳しい手順は [docs/DEPLOY.md](./docs/DEPLOY.md) を参照。
+
 ## ディレクトリ構成
 
 ```
