@@ -53,11 +53,11 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
-      <header className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">G検定攻略サイト</h1>
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl font-bold sm:text-3xl">G検定攻略サイト</h1>
         <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
           <ThemeToggle />
-          <span>{me.username}</span>
+          <span className="hidden sm:inline">{me.username}</span>
           <button
             type="button"
             onClick={logout}

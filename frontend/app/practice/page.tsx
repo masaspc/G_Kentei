@@ -458,20 +458,20 @@ function Judgement({
           : "border-red-300 bg-red-50"
       }`}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <p className="text-lg font-semibold">
           {judgement.is_correct ? "○ 正解" : "× 不正解"}
         </p>
         <button
           type="button"
           onClick={toggleBookmark}
-          className={`rounded border px-3 py-1 text-sm font-semibold ${
+          className={`shrink-0 rounded border px-3 py-1 text-sm font-semibold ${
             bookmarked
               ? "border-yellow-400 bg-yellow-100 dark:bg-yellow-900 text-yellow-800"
               : "border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:bg-slate-700"
           }`}
         >
-          {bookmarked ? "★ ブックマーク済" : "☆ ブックマーク"}
+          {bookmarked ? "★" : "☆"}<span className="ml-1 hidden sm:inline">{bookmarked ? "ブックマーク済" : "ブックマーク"}</span>
         </button>
       </div>
 
