@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import UserContext, get_current_user
 from app.db import get_db
 from app.db.models import Bookmark, Question, SrsState, StudyLog
 from app.schemas.study import (
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/study", tags=["study"])
 async def start_session(
     payload: StudySessionRequest,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> StudySessionResponse:
     stmt = select(Question).where(Question.is_active.is_(True))
     if payload.category:
@@ -33,15 +33,22 @@ async def start_session(
     if payload.difficulty is not None:
         stmt = stmt.where(Question.difficulty == payload.difficulty)
     if payload.condition == "unanswered":
-        answered = select(StudyLog.question_id).distinct()
+        answered = (
+            select(StudyLog.question_id)
+            .where(StudyLog.user_id == user.id)
+            .distinct()
+        )
         stmt = stmt.where(~Question.id.in_(answered))
     elif payload.condition == "srs_due":
         due = select(SrsState.question_id).where(
-            SrsState.next_review_at <= func.now()
+            SrsState.user_id == user.id,
+            SrsState.next_review_at <= func.now(),
         )
         stmt = stmt.where(Question.id.in_(due))
     elif payload.condition == "bookmarked":
-        bookmarked = select(Bookmark.question_id)
+        bookmarked = select(Bookmark.question_id).where(
+            Bookmark.user_id == user.id
+        )
         stmt = stmt.where(Question.id.in_(bookmarked))
 
     stmt = stmt.order_by(func.random()).limit(payload.limit)
@@ -56,7 +63,7 @@ async def start_session(
 async def submit_answer(
     payload: StudyAnswerRequest,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> StudyAnswerResponse:
     question = await db.get(Question, payload.question_id)
     if question is None:
@@ -67,6 +74,7 @@ async def submit_answer(
     )
 
     log = StudyLog(
+        user_id=user.id,
         question_id=question.id,
         selected_answer=payload.selected_answer,
         is_correct=correct,
@@ -89,22 +97,26 @@ async def submit_answer(
 async def evaluate_question(
     payload: EvaluateRequest,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> EvaluateResponse:
     question = await db.get(Question, payload.question_id)
     if question is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Question not found")
 
-    state = await db.get(SrsState, payload.question_id)
+    state = await db.get(SrsState, (user.id, payload.question_id))
     if state is None:
-        state = new_state(payload.question_id)
+        state = new_state(payload.question_id, user_id=user.id)
         db.add(state)
 
     apply_rating(state, payload.self_evaluation)
 
     if payload.study_log_id is not None:
         log = await db.get(StudyLog, payload.study_log_id)
-        if log is not None and log.question_id == payload.question_id:
+        if (
+            log is not None
+            and log.question_id == payload.question_id
+            and log.user_id == user.id
+        ):
             log.self_evaluation = payload.self_evaluation
 
     await db.commit()
@@ -114,12 +126,15 @@ async def evaluate_question(
 @router.get("/srs/due-count", response_model=DueCountResponse)
 async def get_due_count(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> DueCountResponse:
     stmt = (
         select(func.count())
         .select_from(SrsState)
-        .where(SrsState.next_review_at <= func.now())
+        .where(
+            SrsState.user_id == user.id,
+            SrsState.next_review_at <= func.now(),
+        )
     )
     count = (await db.execute(stmt)).scalar_one()
     return DueCountResponse(due_count=int(count))

@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { apiFetch } from "../../lib/api";
-import { useRequireAuth } from "../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../lib/useRequireAuth";
 
 export default function NotificationsPage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"success" | "error" | null>(null);
   const [testError, setTestError] = useState<string | null>(null);

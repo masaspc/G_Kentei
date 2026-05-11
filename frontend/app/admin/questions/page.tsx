@@ -5,12 +5,12 @@ import { useCallback, useEffect, useState } from "react";
 
 import { apiFetch } from "../../lib/api";
 import { Question, QuestionListResponse } from "../../lib/question";
-import { useRequireAuth } from "../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../lib/useRequireAuth";
 
 const PAGE_SIZE = 20;
 
 export default function QuestionsAdminPage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const [items, setItems] = useState<Question[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);

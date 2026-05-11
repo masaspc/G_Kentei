@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 
 import { apiFetch } from "../../../lib/api";
 import { Question, QuestionInput } from "../../../lib/question";
-import { useRequireAuth } from "../../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../../lib/useRequireAuth";
 import { QuestionForm } from "../_components/QuestionForm";
 
 export default function EditQuestionPage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const id = Number(params.id);

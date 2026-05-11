@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { apiFetch } from "../../../lib/api";
-import { useRequireAuth } from "../../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../../lib/useRequireAuth";
 import { ArticleForm, ArticleFormData } from "../_components/ArticleForm";
 
 type Article = {
@@ -18,7 +18,7 @@ type Article = {
 };
 
 export default function EditArticlePage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const id = Number(params.id);

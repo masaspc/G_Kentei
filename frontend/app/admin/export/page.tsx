@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { apiFetch } from "../../lib/api";
-import { useRequireAuth } from "../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../lib/useRequireAuth";
 
 const EXPORTS = [
   { path: "study-logs.csv", label: "学習履歴 (study_logs)" },
@@ -17,7 +17,7 @@ const EXPORTS = [
 ];
 
 export default function ExportPage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 

@@ -17,7 +17,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import UserContext, get_current_admin
 from app.db import get_db
 from app.db.models import (
     ApiUsageLog,
@@ -70,7 +70,7 @@ def _csv_response(
 @router.get("/study-logs.csv")
 async def export_study_logs(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> StreamingResponse:
     rows = (
         await db.execute(select(StudyLog).order_by(StudyLog.studied_at))
@@ -106,7 +106,7 @@ async def export_study_logs(
 @router.get("/srs-states.csv")
 async def export_srs_states(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> StreamingResponse:
     rows = (
         await db.execute(select(SrsState).order_by(SrsState.question_id))
@@ -136,7 +136,7 @@ async def export_srs_states(
 @router.get("/questions.csv")
 async def export_questions(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> StreamingResponse:
     rows = (
         await db.execute(select(Question).order_by(Question.id))
@@ -186,7 +186,7 @@ async def export_questions(
 @router.get("/terms.csv")
 async def export_terms(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> StreamingResponse:
     rows = (
         await db.execute(select(Term).order_by(Term.id))
@@ -220,7 +220,7 @@ async def export_terms(
 @router.get("/api-usage.csv")
 async def export_api_usage(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> StreamingResponse:
     rows = (
         await db.execute(select(ApiUsageLog).order_by(ApiUsageLog.called_at))
@@ -256,7 +256,7 @@ async def export_api_usage(
 @router.get("/exam-sessions.csv")
 async def export_exam_sessions(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> StreamingResponse:
     rows = (
         await db.execute(select(ExamSession).order_by(ExamSession.id))
@@ -288,7 +288,7 @@ async def export_exam_sessions(
 @router.get("/question-notes.csv")
 async def export_question_notes(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> StreamingResponse:
     rows = (
         await db.execute(select(QuestionNote).order_by(QuestionNote.question_id))

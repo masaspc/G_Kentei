@@ -14,7 +14,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, status
 from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import UserContext, get_current_admin
 from app.config import get_settings
 from app.db import get_db
 from app.db.models import SrsState, StudyLog
@@ -107,7 +107,7 @@ async def daily_summary(
 
 @router.post("/test", status_code=status.HTTP_204_NO_CONTENT)
 async def test_notification(
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> None:
     """Send a test ping to Discord (JWT auth)."""
     settings = get_settings()

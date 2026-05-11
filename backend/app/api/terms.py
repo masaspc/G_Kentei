@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import UserContext, get_current_admin, get_current_user
 from app.db import get_db
 from app.db.models import Term
 from app.schemas.term import (
@@ -44,7 +44,7 @@ async def list_terms(
 async def create_term(
     payload: TermCreate,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> Term:
     term = Term(**payload.model_dump())
     db.add(term)
@@ -70,7 +70,7 @@ async def update_term(
     term_id: int,
     payload: TermUpdate,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> Term:
     term = await db.get(Term, term_id)
     if term is None:
@@ -86,7 +86,7 @@ async def update_term(
 async def delete_term(
     term_id: int,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> None:
     term = await db.get(Term, term_id)
     if term is None:

@@ -6,12 +6,56 @@ import logging
 
 from sqlalchemy import select
 
-from app.db.models import Question, ReferenceArticle
+from app.config import get_settings
+from app.db.models import Question, ReferenceArticle, User
 from app.db.session import SessionLocal
 from app.seed.reference_articles import ARTICLES
 from app.seed.seed_questions import QUESTIONS, SEED_SOURCE
 
 logger = logging.getLogger(__name__)
+
+
+async def bootstrap_admin() -> None:
+    """env の AUTH_USERNAME / AUTH_PASSWORD_HASH を反映する。
+
+    - admin (id=1) が __bootstrap__ なら env から確定パスワードに更新
+    - admin ユーザーが存在しなければ作成
+    """
+    settings = get_settings()
+    async with SessionLocal() as session:
+        admin = (
+            await session.execute(select(User).where(User.role == "admin"))
+        ).scalars().first()
+
+        if admin is None:
+            if not settings.auth_password_hash:
+                logger.warning(
+                    "No admin user and AUTH_PASSWORD_HASH is empty; "
+                    "login will be impossible until one is created"
+                )
+                return
+            admin = User(
+                username=settings.auth_username or "admin",
+                password_hash=settings.auth_password_hash,
+                role="admin",
+                is_active=True,
+            )
+            session.add(admin)
+            await session.commit()
+            logger.info("Bootstrapped admin user %s", admin.username)
+            return
+
+        if admin.password_hash == "__bootstrap__":
+            if not settings.auth_password_hash:
+                logger.warning(
+                    "Admin user has placeholder password and "
+                    "AUTH_PASSWORD_HASH is empty; login is impossible"
+                )
+                return
+            admin.username = settings.auth_username or admin.username
+            admin.password_hash = settings.auth_password_hash
+            await session.commit()
+            logger.info("Initialized admin password for %s", admin.username)
 
 
 async def seed_reference_articles() -> None:

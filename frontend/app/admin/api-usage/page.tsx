@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { apiFetch } from "../../lib/api";
-import { useRequireAuth } from "../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../lib/useRequireAuth";
 
 type ModelBreakdown = {
   model: string;
@@ -46,7 +46,7 @@ function formatJPY(value: string): string {
 }
 
 export default function ApiUsagePage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const [summary, setSummary] = useState<Summary | null>(null);
 
   useEffect(() => {

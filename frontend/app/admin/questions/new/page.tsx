@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import { apiFetch } from "../../../lib/api";
 import { QuestionInput, QuestionType } from "../../../lib/question";
-import { useRequireAuth } from "../../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../../lib/useRequireAuth";
 import { QuestionForm } from "../_components/QuestionForm";
 
 type DraftQuestion = {
@@ -19,7 +19,7 @@ type DraftQuestion = {
 };
 
 export default function NewQuestionPage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const router = useRouter();
   const [draft, setDraft] = useState<Partial<QuestionInput> | null>(null);
   const [genCategory, setGenCategory] = useState("");

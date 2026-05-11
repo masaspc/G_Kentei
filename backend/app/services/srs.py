@@ -12,8 +12,9 @@ GOOD = 2
 EASY = 3
 
 
-def new_state(question_id: int) -> SrsState:
+def new_state(question_id: int, *, user_id: int) -> SrsState:
     return SrsState(
+        user_id=user_id,
         question_id=question_id,
         ease_factor=2.5,
         interval_days=0,

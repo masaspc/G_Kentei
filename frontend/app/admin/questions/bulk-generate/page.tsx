@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 
 import { apiFetch } from "../../../lib/api";
-import { useRequireAuth } from "../../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../../lib/useRequireAuth";
 
 type Plan = {
   syllabus_category: string;
@@ -54,7 +54,7 @@ type GenerateResponse = {
 type ModelChoice = "sonnet" | "haiku";
 
 export default function BulkGeneratePage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const [selected, setSelected] = useState<Set<string>>(
     () => new Set(SUB_CATEGORIES.map((c) => c.subcategory)),
   );

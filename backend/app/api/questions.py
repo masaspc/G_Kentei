@@ -10,7 +10,7 @@ from fastapi import (
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import UserContext, get_current_admin, get_current_user
 from app.db import get_db
 from app.db.models import Question
 from app.llm.explanation import generate_explanation
@@ -90,7 +90,7 @@ async def list_categories(
 async def generate_draft(
     payload: GenerateQuestionRequest,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> GenerateQuestionResponse:
     if await is_over_budget(db):
         raise HTTPException(
@@ -127,7 +127,7 @@ async def generate_draft(
 async def import_questions_endpoint(
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> ImportResult:
     content = await file.read()
     filename = (file.filename or "").lower()
@@ -156,7 +156,7 @@ async def import_questions_endpoint(
 async def create_question(
     payload: QuestionCreate,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> Question:
     question = Question(**payload.model_dump())
     db.add(question)
@@ -182,7 +182,7 @@ async def update_question(
     question_id: int,
     payload: QuestionUpdate,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> Question:
     question = await db.get(Question, question_id)
     if question is None:
@@ -198,7 +198,7 @@ async def update_question(
 async def delete_question(
     question_id: int,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> None:
     question = await db.get(Question, question_id)
     if question is None:
@@ -211,7 +211,7 @@ async def delete_question(
 async def generate_question_explanation(
     question_id: int,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> Question:
     question = await db.get(Question, question_id)
     if question is None:

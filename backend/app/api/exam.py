@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import UserContext, get_current_user
 from app.db import get_db
 from app.db.models import ExamSession, Question, StudyLog
 from app.schemas.exam import (
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/exam", tags=["exam"])
 async def start_exam(
     payload: ExamStartRequest,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> ExamStartResponse:
     stmt = (
         select(Question)
@@ -40,7 +40,7 @@ async def start_exam(
             "No active questions available for the exam",
         )
 
-    session = ExamSession(total_questions=len(questions))
+    session = ExamSession(user_id=user.id, total_questions=len(questions))
     db.add(session)
     await db.commit()
     await db.refresh(session)
@@ -56,10 +56,10 @@ async def start_exam(
 async def submit_exam(
     payload: ExamSubmitRequest,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> ExamResult:
     session = await db.get(ExamSession, payload.exam_session_id)
-    if session is None:
+    if session is None or session.user_id != user.id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Exam session not found")
     if session.completed_at is not None:
         raise HTTPException(
@@ -88,6 +88,7 @@ async def submit_exam(
             correct_count += 1
         db.add(
             StudyLog(
+                user_id=user.id,
                 question_id=q.id,
                 selected_answer=answer.selected_answer,
                 is_correct=correct,
@@ -108,10 +109,14 @@ async def submit_exam(
 async def get_result(
     exam_session_id: int,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> ExamResult:
     session = await db.get(ExamSession, exam_session_id)
-    if session is None or session.completed_at is None:
+    if (
+        session is None
+        or session.user_id != user.id
+        or session.completed_at is None
+    ):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Exam result not available")
     return await _build_result(db, exam_session_id)
 

@@ -19,8 +19,9 @@ from app.api.reference import router as reference_router
 from app.api.stats import router as stats_router
 from app.api.study import router as study_router
 from app.api.terms import router as terms_router
+from app.api.users import router as users_router
 from app.config import get_settings
-from app.seed.seeder import seed_questions, seed_reference_articles
+from app.seed.seeder import bootstrap_admin, seed_questions, seed_reference_articles
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -28,6 +29,10 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    try:
+        await bootstrap_admin()
+    except Exception:
+        logger.exception("Failed to bootstrap admin user")
     try:
         await seed_reference_articles()
     except Exception:
@@ -65,3 +70,4 @@ app.include_router(notes_router, prefix="/api")
 app.include_router(export_router, prefix="/api")
 app.include_router(notifications_router, prefix="/api")
 app.include_router(reference_router, prefix="/api")
+app.include_router(users_router, prefix="/api")

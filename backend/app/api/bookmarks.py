@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import UserContext, get_current_user
 from app.db import get_db
 from app.db.models import Bookmark, Question
 
@@ -12,9 +12,13 @@ router = APIRouter(tags=["bookmarks"])
 @router.get("/bookmarks/ids", response_model=list[int])
 async def list_bookmark_ids(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> list[int]:
-    rows = (await db.execute(select(Bookmark.question_id))).scalars().all()
+    rows = (
+        await db.execute(
+            select(Bookmark.question_id).where(Bookmark.user_id == user.id)
+        )
+    ).scalars().all()
     return list(rows)
 
 
@@ -25,14 +29,14 @@ async def list_bookmark_ids(
 async def add_bookmark(
     question_id: int,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> None:
     question = await db.get(Question, question_id)
     if question is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Question not found")
-    existing = await db.get(Bookmark, question_id)
+    existing = await db.get(Bookmark, (user.id, question_id))
     if existing is None:
-        db.add(Bookmark(question_id=question_id))
+        db.add(Bookmark(user_id=user.id, question_id=question_id))
         await db.commit()
 
 
@@ -43,9 +47,9 @@ async def add_bookmark(
 async def remove_bookmark(
     question_id: int,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> None:
-    existing = await db.get(Bookmark, question_id)
+    existing = await db.get(Bookmark, (user.id, question_id))
     if existing is not None:
         await db.delete(existing)
         await db.commit()

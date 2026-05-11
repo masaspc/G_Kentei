@@ -8,7 +8,7 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { apiFetch, clearToken, getToken } from "./lib/api";
 import { DashboardStats } from "./lib/stats";
 
-type Me = { username: string };
+type Me = { id: number; username: string; role: "admin" | "user" };
 
 export default function Home() {
   const router = useRouter();
@@ -57,7 +57,14 @@ export default function Home() {
         <h1 className="text-2xl font-bold sm:text-3xl">G検定攻略サイト</h1>
         <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
           <ThemeToggle />
-          <span className="hidden sm:inline">{me.username}</span>
+          <span className="hidden sm:inline">
+            {me.username}
+            {me.role === "admin" && (
+              <span className="ml-1 rounded bg-purple-100 dark:bg-purple-900 px-1.5 py-0.5 text-xs font-semibold text-purple-700 dark:text-purple-300">
+                admin
+              </span>
+            )}
+          </span>
           <button
             type="button"
             onClick={logout}
@@ -196,28 +203,7 @@ export default function Home() {
           className="block rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6 hover:border-blue-400 hover:bg-blue-50 dark:hover:border-blue-500 dark:hover:bg-slate-700"
         >
           <h3 className="font-semibold">用語集・チートシート</h3>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">用語と定義の検索・管理</p>
-        </Link>
-        <Link
-          href="/admin/questions"
-          className="block rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6 hover:border-blue-400 hover:bg-blue-50 dark:hover:border-blue-500 dark:hover:bg-slate-700"
-        >
-          <h3 className="font-semibold">問題管理</h3>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">問題の作成・編集・削除</p>
-        </Link>
-        <Link
-          href="/admin/api-usage"
-          className="block rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6 hover:border-blue-400 hover:bg-blue-50 dark:hover:border-blue-500 dark:hover:bg-slate-700"
-        >
-          <h3 className="font-semibold">Claude API 利用状況</h3>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">今月のコストと予算</p>
-        </Link>
-        <Link
-          href="/admin/export"
-          className="block rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6 hover:border-blue-400 hover:bg-blue-50 dark:hover:border-blue-500 dark:hover:bg-slate-700"
-        >
-          <h3 className="font-semibold">エクスポート</h3>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">学習履歴を CSV で保存</p>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">用語と定義の検索</p>
         </Link>
         <Link
           href="/reference"
@@ -227,13 +213,65 @@ export default function Home() {
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">シラバス分野別の解説記事</p>
         </Link>
         <Link
-          href="/admin/notifications"
+          href="/account"
           className="block rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6 hover:border-blue-400 hover:bg-blue-50 dark:hover:border-blue-500 dark:hover:bg-slate-700"
         >
-          <h3 className="font-semibold">通知設定</h3>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Discord Webhook 日次サマリー</p>
+          <h3 className="font-semibold">アカウント設定</h3>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">パスワード変更</p>
         </Link>
       </section>
+
+      {me.role === "admin" && (
+        <section className="mt-6">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            管理者メニュー
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Link
+              href="/admin/users"
+              className="block rounded-lg border border-purple-200 dark:border-purple-700 bg-white dark:bg-slate-800 p-6 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-slate-700"
+            >
+              <h3 className="font-semibold">ユーザー管理</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">ユーザーの追加・編集・削除</p>
+            </Link>
+            <Link
+              href="/admin/questions"
+              className="block rounded-lg border border-purple-200 dark:border-purple-700 bg-white dark:bg-slate-800 p-6 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-slate-700"
+            >
+              <h3 className="font-semibold">問題管理</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">問題の作成・編集・削除</p>
+            </Link>
+            <Link
+              href="/admin/reference"
+              className="block rounded-lg border border-purple-200 dark:border-purple-700 bg-white dark:bg-slate-800 p-6 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-slate-700"
+            >
+              <h3 className="font-semibold">参考書管理</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">記事の作成・編集</p>
+            </Link>
+            <Link
+              href="/admin/api-usage"
+              className="block rounded-lg border border-purple-200 dark:border-purple-700 bg-white dark:bg-slate-800 p-6 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-slate-700"
+            >
+              <h3 className="font-semibold">Claude API 利用状況</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">今月のコストと予算</p>
+            </Link>
+            <Link
+              href="/admin/export"
+              className="block rounded-lg border border-purple-200 dark:border-purple-700 bg-white dark:bg-slate-800 p-6 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-slate-700"
+            >
+              <h3 className="font-semibold">エクスポート</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">データを CSV で保存</p>
+            </Link>
+            <Link
+              href="/admin/notifications"
+              className="block rounded-lg border border-purple-200 dark:border-purple-700 bg-white dark:bg-slate-800 p-6 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-slate-700"
+            >
+              <h3 className="font-semibold">通知設定</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Discord Webhook 日次サマリー</p>
+            </Link>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

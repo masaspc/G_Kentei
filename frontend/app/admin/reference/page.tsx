@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { apiFetch } from "../../lib/api";
-import { useRequireAuth } from "../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../lib/useRequireAuth";
 
 type Article = {
   id: number;
@@ -16,7 +16,7 @@ type Article = {
 };
 
 export default function AdminReferencePage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 

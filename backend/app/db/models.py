@@ -9,6 +9,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     Numeric,
+    PrimaryKeyConstraint,
     SmallInteger,
     String,
     Text,
@@ -18,6 +19,22 @@ from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    username: Mapped[str] = mapped_column(String(100), unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(255))
+    role: Mapped[str] = mapped_column(String(20), server_default="user")
+    is_active: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
 
 class Question(Base):
@@ -51,6 +68,11 @@ class StudyLog(Base):
     __tablename__ = "study_logs"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+    )
     question_id: Mapped[int] = mapped_column(
         BigInteger,
         ForeignKey("questions.id", ondelete="CASCADE"),
@@ -74,6 +96,11 @@ class ExamSession(Base):
     __tablename__ = "exam_sessions"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+    )
     started_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()
     )
@@ -87,11 +114,15 @@ class ExamSession(Base):
 
 class SrsState(Base):
     __tablename__ = "srs_states"
+    __table_args__ = (PrimaryKeyConstraint("user_id", "question_id"),)
 
+    user_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("users.id", ondelete="CASCADE"),
+    )
     question_id: Mapped[int] = mapped_column(
         BigInteger,
         ForeignKey("questions.id", ondelete="CASCADE"),
-        primary_key=True,
     )
     ease_factor: Mapped[float] = mapped_column(Float, server_default="2.5")
     interval_days: Mapped[int] = mapped_column(Integer, server_default="0")
@@ -103,11 +134,15 @@ class SrsState(Base):
 
 class Bookmark(Base):
     __tablename__ = "bookmarks"
+    __table_args__ = (PrimaryKeyConstraint("user_id", "question_id"),)
 
+    user_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("users.id", ondelete="CASCADE"),
+    )
     question_id: Mapped[int] = mapped_column(
         BigInteger,
         ForeignKey("questions.id", ondelete="CASCADE"),
-        primary_key=True,
     )
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()
@@ -116,11 +151,15 @@ class Bookmark(Base):
 
 class QuestionNote(Base):
     __tablename__ = "question_notes"
+    __table_args__ = (PrimaryKeyConstraint("user_id", "question_id"),)
 
+    user_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("users.id", ondelete="CASCADE"),
+    )
     question_id: Mapped[int] = mapped_column(
         BigInteger,
         ForeignKey("questions.id", ondelete="CASCADE"),
-        primary_key=True,
     )
     note: Mapped[str] = mapped_column(Text)
     updated_at: Mapped[datetime] = mapped_column(

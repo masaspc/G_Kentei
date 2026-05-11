@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 
 import { API_BASE_URL, getToken } from "../../../lib/api";
-import { useRequireAuth } from "../../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../../lib/useRequireAuth";
 
 type ImportError = { row: number; message: string };
 type ImportResult = {
@@ -33,7 +33,7 @@ const CSV_EXAMPLE = `question_text,question_type,choices,correct_answer,syllabus
 "ディープラーニングの活性化関数として代表的なものは？",single,"[""ReLU"",""線形回帰"",""k-means"",""ID3""]",0,機械学習の基礎,,2,"ReLU は...",manual,"[""https://example.com""]","[""活性化関数""]",,true`;
 
 export default function ImportQuestionsPage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [error, setError] = useState<string | null>(null);

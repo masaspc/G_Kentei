@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import UserContext, get_current_admin
 from app.config import get_settings
 from app.db import get_db
 from app.db.models import ReferenceArticle
@@ -38,7 +38,7 @@ async def list_published_articles(
 @router.get("/admin", response_model=list[ReferenceArticleDetail])
 async def list_all_articles(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> list[ReferenceArticle]:
     stmt = select(ReferenceArticle).order_by(
         ReferenceArticle.syllabus_category, ReferenceArticle.order_num
@@ -62,7 +62,7 @@ async def get_article(
 async def create_article(
     payload: ReferenceArticleInput,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> ReferenceArticle:
     article = ReferenceArticle(**payload.model_dump())
     db.add(article)
@@ -76,7 +76,7 @@ async def update_article(
     article_id: int,
     payload: ReferenceArticleInput,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> ReferenceArticle:
     article = await db.get(ReferenceArticle, article_id)
     if article is None:
@@ -92,7 +92,7 @@ async def update_article(
 async def delete_article(
     article_id: int,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> None:
     article = await db.get(ReferenceArticle, article_id)
     if article is None:
@@ -105,7 +105,7 @@ async def delete_article(
 async def generate_article_content(
     article_id: int,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> ReferenceArticle:
     settings = get_settings()
 

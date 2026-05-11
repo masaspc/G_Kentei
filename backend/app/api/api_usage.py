@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import UserContext, get_current_admin
 from app.config import get_settings
 from app.db import get_db
 from app.db.models import ApiUsageLog
@@ -23,7 +23,7 @@ router = APIRouter(prefix="/api-usage", tags=["api-usage"])
 @router.get("/summary", response_model=ApiUsageSummary)
 async def get_summary(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    _: UserContext = Depends(get_current_admin),
 ) -> ApiUsageSummary:
     settings = get_settings()
     budget = Decimal(str(settings.monthly_api_budget_usd))

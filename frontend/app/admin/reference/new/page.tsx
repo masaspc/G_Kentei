@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { apiFetch } from "../../../lib/api";
-import { useRequireAuth } from "../../../lib/useRequireAuth";
+import { useRequireAdmin } from "../../../lib/useRequireAuth";
 import { ArticleForm, ArticleFormData } from "../_components/ArticleForm";
 
 export default function NewArticlePage() {
-  const ready = useRequireAuth();
+  const ready = useRequireAdmin();
   const router = useRouter();
 
   async function handleSubmit(data: ArticleFormData) {

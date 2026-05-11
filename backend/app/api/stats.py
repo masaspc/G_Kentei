@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import UserContext, get_current_user
 from app.db import get_db
 from app.db.models import Question, SrsState, StudyLog
 from app.schemas.stats import (
@@ -27,7 +27,7 @@ def _accuracy(correct: int, attempts: int) -> float:
 @router.get("/dashboard", response_model=DashboardStats)
 async def dashboard(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> DashboardStats:
     total_questions = int(
         (await db.execute(select(func.count()).select_from(Question))).scalar_one()
@@ -40,7 +40,7 @@ async def dashboard(
                 func.coalesce(
                     func.sum(case((StudyLog.is_correct.is_(True), 1), else_=0)), 0
                 ).label("correct"),
-            )
+            ).where(StudyLog.user_id == user.id)
         )
     ).one()
     total_attempts = int(overall.attempts)
@@ -58,7 +58,7 @@ async def dashboard(
                 func.sum(case((StudyLog.is_correct.is_(True), 1), else_=0)), 0
             ).label("correct"),
         )
-        .where(StudyLog.studied_at >= week_start)
+        .where(StudyLog.user_id == user.id, StudyLog.studied_at >= week_start)
         .group_by(day_col)
         .order_by(day_col)
     )
@@ -81,6 +81,7 @@ async def dashboard(
             ).label("correct"),
         )
         .join(StudyLog, StudyLog.question_id == Question.id)
+        .where(StudyLog.user_id == user.id)
         .group_by(Question.syllabus_category)
         .having(func.count() >= 3)
     )
@@ -96,14 +97,17 @@ async def dashboard(
     ]
     weak_categories = sorted(categories, key=lambda c: c.accuracy)[:3]
 
-    streak_days = await _streak_days(db, today_utc)
+    streak_days = await _streak_days(db, today_utc, user.id)
 
     due_today = int(
         (
             await db.execute(
                 select(func.count())
                 .select_from(SrsState)
-                .where(SrsState.next_review_at <= func.now())
+                .where(
+                    SrsState.user_id == user.id,
+                    SrsState.next_review_at <= func.now(),
+                )
             )
         ).scalar_one()
     )
@@ -122,7 +126,7 @@ async def dashboard(
 @router.get("/heatmap", response_model=HeatmapResponse)
 async def heatmap(
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> HeatmapResponse:
     stmt = (
         select(
@@ -134,6 +138,7 @@ async def heatmap(
             ).label("correct"),
         )
         .join(StudyLog, StudyLog.question_id == Question.id)
+        .where(StudyLog.user_id == user.id)
         .group_by(Question.syllabus_category, Question.difficulty)
         .order_by(Question.syllabus_category, Question.difficulty)
     )
@@ -155,14 +160,15 @@ async def heatmap(
 async def progress(
     days: int = 60,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),
 ) -> ProgressResponse:
     days = max(1, min(days, 365))
     cutoff = datetime.now(UTC) - timedelta(days=days - 1)
 
-    # Cumulative baseline = answers strictly before the window
-    baseline_stmt = select(func.count()).select_from(StudyLog).where(
-        StudyLog.studied_at < cutoff
+    baseline_stmt = (
+        select(func.count())
+        .select_from(StudyLog)
+        .where(StudyLog.user_id == user.id, StudyLog.studied_at < cutoff)
     )
     cumulative = int((await db.execute(baseline_stmt)).scalar_one())
 
@@ -175,7 +181,7 @@ async def progress(
                 func.sum(case((StudyLog.is_correct.is_(True), 1), else_=0)), 0
             ).label("correct"),
         )
-        .where(StudyLog.studied_at >= cutoff)
+        .where(StudyLog.user_id == user.id, StudyLog.studied_at >= cutoff)
         .group_by(day_col)
         .order_by(day_col)
     )
@@ -195,14 +201,14 @@ async def progress(
     return ProgressResponse(points=points)
 
 
-async def _streak_days(db: AsyncSession, today_utc) -> int:
+async def _streak_days(db: AsyncSession, today_utc, user_id: int) -> int:
     """Consecutive trailing days that have at least one study_log."""
 
     cutoff = today_utc - timedelta(days=365)
     day_col = func.date_trunc("day", StudyLog.studied_at)
     stmt = (
         select(day_col.label("day"))
-        .where(StudyLog.studied_at >= cutoff)
+        .where(StudyLog.user_id == user_id, StudyLog.studied_at >= cutoff)
         .group_by("day")
         .order_by(day_col.desc())
     )
