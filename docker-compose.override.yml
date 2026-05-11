@@ -1,0 +1,22 @@
+# 開発時のオーバーライド (docker compose up で自動適用される)
+# bind mount でホットリロード、開発用のキャッシュボリュームを使用
+#
+# 本番では使われないので、prod デプロイ時はこのファイルが読み込まれないよう
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml ...
+# を使用すること (-f を明示すると override.yml は無視される)
+services:
+  backend:
+    volumes:
+      - ./backend:/app
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  frontend:
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+      - frontend_next_cache:/app/.next
+    command: npm run dev
+
+volumes:
+  frontend_node_modules:
+  frontend_next_cache:
