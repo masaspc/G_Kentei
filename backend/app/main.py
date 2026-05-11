@@ -1,3 +1,6 @@
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -17,10 +20,23 @@ from app.api.stats import router as stats_router
 from app.api.study import router as study_router
 from app.api.terms import router as terms_router
 from app.config import get_settings
+from app.seed.seeder import seed_reference_articles
 
+logger = logging.getLogger(__name__)
 settings = get_settings()
 
-app = FastAPI(title="G検定攻略サイト API", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        await seed_reference_articles()
+    except Exception:
+        logger.exception("Failed to seed reference articles")
+    yield
+
+
+app = FastAPI(title="G検定攻略サイト API", version="0.1.0", lifespan=lifespan)
+
 
 app.add_middleware(
     CORSMiddleware,
