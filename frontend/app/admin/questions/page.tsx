@@ -57,7 +57,13 @@ export default function QuestionsAdminPage() {
           <h1 className="mt-1 text-2xl font-bold">問題管理</h1>
           <p className="text-sm text-slate-600 dark:text-slate-400">合計 {total} 問</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/admin/questions/bulk-generate"
+            className="rounded border border-purple-300 dark:border-purple-600 px-4 py-2 font-semibold text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950"
+          >
+            Claude で一括生成
+          </Link>
           <Link
             href="/admin/questions/import"
             className="rounded border border-slate-300 dark:border-slate-600 px-4 py-2 font-semibold hover:bg-slate-100 dark:bg-slate-700"
