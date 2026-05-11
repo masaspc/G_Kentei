@@ -33,13 +33,13 @@ export default function ProgressPage() {
         ← ダッシュボード
       </Link>
       <h1 className="mt-1 text-2xl font-bold">学習進捗</h1>
-      <p className="text-sm text-slate-600">過去60日の学習量と累計回答数</p>
+      <p className="text-sm text-slate-600 dark:text-slate-400">過去60日の学習量と累計回答数</p>
 
       {points.length === 0 ? (
-        <p className="mt-6 text-slate-500">学習履歴がありません。</p>
+        <p className="mt-6 text-slate-500 dark:text-slate-400">学習履歴がありません。</p>
       ) : (
         <>
-          <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+          <section className="mt-6 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
             <p className="text-sm font-semibold">日別回答数</p>
             <div className="mt-3 flex items-end gap-1 overflow-x-auto">
               {points.map((p) => (
@@ -54,23 +54,23 @@ export default function ProgressPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
               {points[0]?.day} 〜 {points[points.length - 1]?.day}
             </p>
           </section>
 
-          <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+          <section className="mt-6 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
             <p className="text-sm font-semibold">累計回答数</p>
             <CumulativeChart points={points} max={maxCumulative} />
           </section>
 
-          <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+          <section className="mt-6 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
             <p className="text-sm font-semibold">直近の日次サマリ</p>
             <ul className="mt-3 max-h-64 space-y-1 overflow-y-auto text-sm">
               {[...points].reverse().map((p) => (
                 <li
                   key={p.day}
-                  className="flex justify-between border-b border-slate-100 py-1"
+                  className="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"
                 >
                   <span>{p.day}</span>
                   <span className="font-mono">

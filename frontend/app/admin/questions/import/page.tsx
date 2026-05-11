@@ -80,7 +80,7 @@ export default function ImportQuestionsPage() {
         ← 問題一覧
       </Link>
       <h1 className="mt-1 text-2xl font-bold">問題の一括インポート</h1>
-      <p className="mt-1 text-sm text-slate-600">
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
         CSV または JSON ファイルから問題を一括登録します。
         1 件でもバリデーションエラーがあると、何も登録せずエラーを返します。
       </p>
@@ -90,7 +90,7 @@ export default function ImportQuestionsPage() {
           type="file"
           accept=".csv,.json,application/json,text/csv"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="block w-full rounded border border-slate-300 px-3 py-2"
+          className="block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button
@@ -103,7 +103,7 @@ export default function ImportQuestionsPage() {
       </form>
 
       {result && (
-        <section className="mt-8 rounded-lg border border-slate-200 bg-white p-6">
+        <section className="mt-8 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
           <h2 className="text-lg font-semibold">結果</h2>
           <p className="mt-2 text-sm">
             成功 <span className="font-semibold text-green-600">{result.success}</span>
@@ -131,7 +131,7 @@ export default function ImportQuestionsPage() {
         </div>
         <div>
           <h2 className="text-lg font-semibold">CSV フォーマット例</h2>
-          <p className="mt-1 text-xs text-slate-600">
+          <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
             JSONB フィールド (<code>choices</code> / <code>correct_answer</code> /
             <code> reference_links</code> / <code>tags</code>) は JSON 文字列でエンコードしてください。
           </p>

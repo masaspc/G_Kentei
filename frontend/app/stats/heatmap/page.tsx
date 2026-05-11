@@ -8,7 +8,7 @@ import { HeatmapCell, HeatmapResponse } from "../../lib/stats";
 import { useRequireAuth } from "../../lib/useRequireAuth";
 
 function accuracyColor(accuracy: number, attempts: number): string {
-  if (attempts === 0) return "bg-slate-100 text-slate-400";
+  if (attempts === 0) return "bg-slate-100 dark:bg-slate-700 text-slate-400";
   if (accuracy >= 0.8) return "bg-green-500 text-white";
   if (accuracy >= 0.6) return "bg-green-300";
   if (accuracy >= 0.4) return "bg-yellow-200";
@@ -51,12 +51,12 @@ export default function HeatmapPage() {
         ← ダッシュボード
       </Link>
       <h1 className="mt-1 text-2xl font-bold">弱点ヒートマップ</h1>
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-slate-600 dark:text-slate-400">
         分野 × 難易度ごとの正答率。色が濃いほど成績が悪い分野です。
       </p>
 
       {cells.length === 0 ? (
-        <p className="mt-6 text-slate-500">学習履歴がありません。</p>
+        <p className="mt-6 text-slate-500 dark:text-slate-400">学習履歴がありません。</p>
       ) : (
         <div className="mt-6 overflow-x-auto">
           <table className="min-w-full border-collapse text-sm">
@@ -70,7 +70,7 @@ export default function HeatmapPage() {
             </thead>
             <tbody>
               {categories.map((category) => (
-                <tr key={category} className="border-t border-slate-200">
+                <tr key={category} className="border-t border-slate-200 dark:border-slate-700">
                   <td className="px-3 py-2 font-medium">{category}</td>
                   {[1, 2, 3].map((difficulty) => {
                     const cell = lookup.get(`${category}::${difficulty}`);
@@ -101,7 +101,7 @@ export default function HeatmapPage() {
         </div>
       )}
 
-      <p className="mt-6 text-xs text-slate-500">
+      <p className="mt-6 text-xs text-slate-500 dark:text-slate-400">
         凡例: <span className="rounded bg-red-300 px-2">40%未満</span>{" "}
         <span className="rounded bg-yellow-200 px-2">40-60%</span>{" "}
         <span className="rounded bg-green-300 px-2">60-80%</span>{" "}

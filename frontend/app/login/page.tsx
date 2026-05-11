@@ -39,7 +39,7 @@ export default function LoginPage() {
   return (
     <main className="mx-auto max-w-md px-6 py-24">
       <h1 className="text-2xl font-bold">ログイン</h1>
-      <p className="mt-1 text-sm text-slate-600">G検定攻略サイト</p>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">G検定攻略サイト</p>
 
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
         <label className="block">
@@ -50,7 +50,7 @@ export default function LoginPage() {
             required
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+            className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
           />
         </label>
 
@@ -62,7 +62,7 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+            className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
           />
         </label>
 

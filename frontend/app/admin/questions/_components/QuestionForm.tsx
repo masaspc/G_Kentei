@@ -108,7 +108,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
           rows={4}
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
-          className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+          className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
         />
       </label>
 
@@ -118,7 +118,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
           <select
             value={questionType}
             onChange={(e) => setQuestionType(e.target.value as QuestionType)}
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+            className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
           >
             <option value="single">単一選択</option>
             <option value="multi">複数選択</option>
@@ -132,7 +132,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(Number(e.target.value))}
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+            className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
           >
             <option value={1}>1 (易)</option>
             <option value={2}>2 (中)</option>
@@ -147,7 +147,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
           rows={4}
           value={choicesText}
           onChange={(e) => setChoicesText(e.target.value)}
-          className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 font-mono text-sm"
+          className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2 font-mono text-sm"
         />
       </label>
 
@@ -160,7 +160,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
           required
           value={correctAnswerText}
           onChange={(e) => setCorrectAnswerText(e.target.value)}
-          className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 font-mono text-sm"
+          className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2 font-mono text-sm"
         />
       </label>
 
@@ -172,7 +172,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
             required
             value={syllabusCategory}
             onChange={(e) => setSyllabusCategory(e.target.value)}
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+            className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
           />
         </label>
 
@@ -182,7 +182,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
             type="text"
             value={subcategory ?? ""}
             onChange={(e) => setSubcategory(e.target.value)}
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+            className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
           />
         </label>
       </div>
@@ -193,7 +193,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
           rows={4}
           value={explanation ?? ""}
           onChange={(e) => setExplanation(e.target.value)}
-          className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+          className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
         />
       </label>
 
@@ -205,7 +205,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
             onChange={(e) =>
               setExplanationSource(e.target.value as ExplanationSource | "")
             }
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+            className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
           >
             <option value="">(未設定)</option>
             <option value="manual">manual</option>
@@ -220,7 +220,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
             type="text"
             value={source ?? ""}
             onChange={(e) => setSource(e.target.value)}
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+            className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
           />
         </label>
       </div>
@@ -231,7 +231,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
           rows={3}
           value={referenceLinksText}
           onChange={(e) => setReferenceLinksText(e.target.value)}
-          className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 font-mono text-sm"
+          className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2 font-mono text-sm"
         />
       </label>
 
@@ -241,7 +241,7 @@ export function QuestionForm({ initial, submitLabel, onSubmit }: Props) {
           type="text"
           value={tagsText}
           onChange={(e) => setTagsText(e.target.value)}
-          className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+          className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
         />
       </label>
 

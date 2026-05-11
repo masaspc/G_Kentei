@@ -116,11 +116,11 @@ export default function ExamPage() {
           ← ダッシュボード
         </Link>
         <h1 className="mt-1 text-2xl font-bold">模擬試験</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
           本番再現: 145問・100分・中断不可。開始すると即座にタイマーが動き出します。
         </p>
 
-        <div className="mt-6 rounded border border-slate-200 bg-white p-6">
+        <div className="mt-6 rounded border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
           <label className="block">
             <span className="text-sm font-medium">問題数</span>
             <input
@@ -129,7 +129,7 @@ export default function ExamPage() {
               max={200}
               value={totalQuestions}
               onChange={(e) => setTotalQuestions(Number(e.target.value))}
-              className="mt-1 block w-32 rounded border border-slate-300 px-3 py-2"
+              className="mt-1 block w-32 rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
             />
           </label>
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
@@ -148,9 +148,9 @@ export default function ExamPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-6">
-      <header className="sticky top-0 z-10 -mx-6 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
+      <header className="sticky top-0 z-10 -mx-6 flex items-center justify-between border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 px-6 py-3">
         <div>
-          <p className="text-xs uppercase tracking-wide text-slate-500">残り時間</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">残り時間</p>
           <p
             className={`text-2xl font-bold ${
               remaining <= 300 ? "text-red-600" : ""
@@ -160,7 +160,7 @@ export default function ExamPage() {
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xs uppercase tracking-wide text-slate-500">
+          <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
             解答済 / 全問
           </p>
           <p className="text-2xl font-bold">
@@ -186,7 +186,7 @@ export default function ExamPage() {
       </header>
 
       <section className="mt-6">
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
           問題 {index + 1} / {items.length} ・ {current.syllabus_category} ・ 難易度{" "}
           {current.difficulty}
         </p>
@@ -205,7 +205,7 @@ export default function ExamPage() {
             type="button"
             onClick={() => setIndex((i) => Math.max(0, i - 1))}
             disabled={index === 0}
-            className="rounded border border-slate-300 px-3 py-1 text-sm hover:bg-slate-100 disabled:opacity-50"
+            className="rounded border border-slate-300 dark:border-slate-600 px-3 py-1 text-sm hover:bg-slate-100 dark:bg-slate-700 disabled:opacity-50"
           >
             ← 前へ
           </button>
@@ -215,7 +215,7 @@ export default function ExamPage() {
               setIndex((i) => Math.min(items.length - 1, i + 1))
             }
             disabled={index === items.length - 1}
-            className="rounded border border-slate-300 px-3 py-1 text-sm hover:bg-slate-100 disabled:opacity-50"
+            className="rounded border border-slate-300 dark:border-slate-600 px-3 py-1 text-sm hover:bg-slate-100 dark:bg-slate-700 disabled:opacity-50"
           >
             次へ →
           </button>
@@ -224,8 +224,8 @@ export default function ExamPage() {
             onClick={() => toggleFlag(current.id)}
             className={`rounded border px-3 py-1 text-sm ${
               flags[current.id]
-                ? "border-yellow-400 bg-yellow-100"
-                : "border-slate-300"
+                ? "border-yellow-400 bg-yellow-100 dark:bg-yellow-900"
+                : "border-slate-300 dark:border-slate-600"
             }`}
           >
             {flags[current.id] ? "見直しフラグ済" : "見直しフラグ"}
@@ -234,7 +234,7 @@ export default function ExamPage() {
       </section>
 
       <section className="mt-8">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
           問題一覧
         </p>
         <div className="mt-2 grid grid-cols-10 gap-1 sm:grid-cols-15">
@@ -252,10 +252,10 @@ export default function ExamPage() {
                     : answered
                       ? flagged
                         ? "bg-yellow-300"
-                        : "bg-blue-100"
+                        : "bg-blue-100 dark:bg-blue-900"
                       : flagged
-                        ? "bg-yellow-100"
-                        : "bg-slate-100 text-slate-500"
+                        ? "bg-yellow-100 dark:bg-yellow-900"
+                        : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
                 }`}
               >
                 {i + 1}
@@ -291,8 +291,8 @@ function ExamAnswerInput({
               onClick={() => onChange(idx)}
               className={`block w-full rounded border px-3 py-2 text-left ${
                 selected
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-slate-300 hover:bg-slate-100"
+                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                  : "border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:bg-slate-700"
               }`}
             >
               {idx + 1}. {choice}
@@ -310,7 +310,7 @@ function ExamAnswerInput({
         {choices.map((choice, idx) => (
           <label
             key={idx}
-            className="flex items-center gap-2 rounded border border-slate-300 px-3 py-2 hover:bg-slate-100"
+            className="flex items-center gap-2 rounded border border-slate-300 dark:border-slate-600 px-3 py-2 hover:bg-slate-100 dark:bg-slate-700"
           >
             <input
               type="checkbox"
@@ -340,8 +340,8 @@ function ExamAnswerInput({
           onClick={() => onChange(true)}
           className={`flex-1 rounded border px-4 py-3 text-lg font-semibold ${
             value === true
-              ? "border-blue-500 bg-blue-50"
-              : "border-slate-300 hover:bg-slate-100"
+              ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+              : "border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:bg-slate-700"
           }`}
         >
           ○
@@ -351,8 +351,8 @@ function ExamAnswerInput({
           onClick={() => onChange(false)}
           className={`flex-1 rounded border px-4 py-3 text-lg font-semibold ${
             value === false
-              ? "border-blue-500 bg-blue-50"
-              : "border-slate-300 hover:bg-slate-100"
+              ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+              : "border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:bg-slate-700"
           }`}
         >
           ×
@@ -367,7 +367,7 @@ function ExamAnswerInput({
       value={typeof value === "string" ? value : ""}
       onChange={(e) => onChange(e.target.value)}
       placeholder="解答を入力"
-      className="block w-full rounded border border-slate-300 px-3 py-2"
+      className="block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
     />
   );
 }

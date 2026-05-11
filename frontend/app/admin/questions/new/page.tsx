@@ -86,9 +86,9 @@ export default function NewQuestionPage() {
       </Link>
       <h1 className="mt-1 text-2xl font-bold">新規問題</h1>
 
-      <section className="mt-6 rounded border border-slate-200 bg-slate-50 p-4">
+      <section className="mt-6 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
         <p className="text-sm font-semibold">Claude で下書きを生成</p>
-        <p className="text-xs text-slate-600">
+        <p className="text-xs text-slate-600 dark:text-slate-400">
           Sonnet 4.6 が生成した内容は必ず確認・修正してから保存してください。
         </p>
         <div className="mt-3 grid gap-2 sm:grid-cols-3">
@@ -97,12 +97,12 @@ export default function NewQuestionPage() {
             value={genCategory}
             onChange={(e) => setGenCategory(e.target.value)}
             placeholder="分野"
-            className="rounded border border-slate-300 px-2 py-1 text-sm"
+            className="rounded border border-slate-300 dark:border-slate-600 px-2 py-1 text-sm"
           />
           <select
             value={genDifficulty}
             onChange={(e) => setGenDifficulty(Number(e.target.value))}
-            className="rounded border border-slate-300 px-2 py-1 text-sm"
+            className="rounded border border-slate-300 dark:border-slate-600 px-2 py-1 text-sm"
           >
             <option value={1}>難易度 1 (易)</option>
             <option value={2}>難易度 2 (中)</option>
@@ -111,7 +111,7 @@ export default function NewQuestionPage() {
           <select
             value={genType}
             onChange={(e) => setGenType(e.target.value as QuestionType)}
-            className="rounded border border-slate-300 px-2 py-1 text-sm"
+            className="rounded border border-slate-300 dark:border-slate-600 px-2 py-1 text-sm"
           >
             <option value="single">単一選択</option>
             <option value="multi">複数選択</option>
@@ -123,7 +123,7 @@ export default function NewQuestionPage() {
           type="button"
           onClick={generateDraft}
           disabled={generating || genCategory.trim() === ""}
-          className="mt-3 rounded border border-slate-300 px-3 py-1 text-sm font-semibold hover:bg-slate-200 disabled:opacity-50"
+          className="mt-3 rounded border border-slate-300 dark:border-slate-600 px-3 py-1 text-sm font-semibold hover:bg-slate-200 dark:bg-slate-700 disabled:opacity-50"
         >
           {generating ? "生成中..." : "生成"}
         </button>

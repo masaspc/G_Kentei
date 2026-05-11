@@ -158,7 +158,7 @@ export default function PracticePage() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="(空で全分野)"
-              className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+              className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
             />
             <datalist id="categories">
               {categories.map((c) => (
@@ -175,7 +175,7 @@ export default function PracticePage() {
                 onChange={(e) =>
                   setDifficulty(e.target.value === "" ? "" : Number(e.target.value))
                 }
-                className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+                className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
               >
                 <option value="">指定なし</option>
                 <option value={1}>1 (易)</option>
@@ -189,7 +189,7 @@ export default function PracticePage() {
               <select
                 value={condition}
                 onChange={(e) => setCondition(e.target.value as SessionCondition)}
-                className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+                className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
               >
                 <option value="all">すべて</option>
                 <option value="unanswered">未回答のみ</option>
@@ -204,7 +204,7 @@ export default function PracticePage() {
             <select
               value={limit}
               onChange={(e) => setLimit(Number(e.target.value))}
-              className="mt-1 block w-full rounded border border-slate-300 px-3 py-2"
+              className="mt-1 block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
             >
               <option value={10}>10 問</option>
               <option value={20}>20 問</option>
@@ -264,7 +264,7 @@ function Session({
   const question = questions[index];
   return (
     <section className="mt-6">
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-slate-600 dark:text-slate-400">
         {index + 1} / {questions.length} ・ {question.syllabus_category} ・ 難易度{" "}
         {question.difficulty}
       </p>
@@ -323,8 +323,8 @@ function AnswerInput({
             onClick={() => onSubmit(idx)}
             className={`block w-full rounded border px-3 py-2 text-left ${
               disabled && selected === idx
-                ? "border-blue-500 bg-blue-50"
-                : "border-slate-300 hover:bg-slate-100 disabled:opacity-60"
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                : "border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:bg-slate-700 disabled:opacity-60"
             }`}
           >
             {idx + 1}. {choice}
@@ -340,8 +340,8 @@ function AnswerInput({
         {choices.map((choice, idx) => (
           <label
             key={idx}
-            className={`flex items-center gap-2 rounded border border-slate-300 px-3 py-2 ${
-              disabled ? "opacity-60" : "hover:bg-slate-100"
+            className={`flex items-center gap-2 rounded border border-slate-300 dark:border-slate-600 px-3 py-2 ${
+              disabled ? "opacity-60" : "hover:bg-slate-100 dark:bg-slate-700"
             }`}
           >
             <input
@@ -380,7 +380,7 @@ function AnswerInput({
           type="button"
           disabled={disabled}
           onClick={() => onSubmit(true)}
-          className="flex-1 rounded border border-slate-300 px-4 py-3 text-lg font-semibold hover:bg-slate-100 disabled:opacity-60"
+          className="flex-1 rounded border border-slate-300 dark:border-slate-600 px-4 py-3 text-lg font-semibold hover:bg-slate-100 dark:bg-slate-700 disabled:opacity-60"
         >
           ○
         </button>
@@ -388,7 +388,7 @@ function AnswerInput({
           type="button"
           disabled={disabled}
           onClick={() => onSubmit(false)}
-          className="flex-1 rounded border border-slate-300 px-4 py-3 text-lg font-semibold hover:bg-slate-100 disabled:opacity-60"
+          className="flex-1 rounded border border-slate-300 dark:border-slate-600 px-4 py-3 text-lg font-semibold hover:bg-slate-100 dark:bg-slate-700 disabled:opacity-60"
         >
           ×
         </button>
@@ -403,7 +403,7 @@ function AnswerInput({
         disabled={disabled}
         value={textValue}
         onChange={(e) => setTextValue(e.target.value)}
-        className="block w-full rounded border border-slate-300 px-3 py-2"
+        className="block w-full rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
         placeholder="解答を入力"
       />
       <button
@@ -467,8 +467,8 @@ function Judgement({
           onClick={toggleBookmark}
           className={`rounded border px-3 py-1 text-sm font-semibold ${
             bookmarked
-              ? "border-yellow-400 bg-yellow-100 text-yellow-800"
-              : "border-slate-300 hover:bg-slate-100"
+              ? "border-yellow-400 bg-yellow-100 dark:bg-yellow-900 text-yellow-800"
+              : "border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:bg-slate-700"
           }`}
         >
           {bookmarked ? "★ ブックマーク済" : "☆ ブックマーク"}
@@ -515,28 +515,28 @@ function Judgement({
           <button
             type="button"
             onClick={() => onEvaluate(0)}
-            className="rounded bg-red-100 px-2 py-2 text-sm font-semibold hover:bg-red-200"
+            className="rounded bg-red-100 dark:bg-red-900 px-2 py-2 text-sm font-semibold hover:bg-red-200"
           >
             Again
           </button>
           <button
             type="button"
             onClick={() => onEvaluate(1)}
-            className="rounded bg-orange-100 px-2 py-2 text-sm font-semibold hover:bg-orange-200"
+            className="rounded bg-orange-100 dark:bg-orange-900 px-2 py-2 text-sm font-semibold hover:bg-orange-200"
           >
             Hard
           </button>
           <button
             type="button"
             onClick={() => onEvaluate(2)}
-            className="rounded bg-blue-100 px-2 py-2 text-sm font-semibold hover:bg-blue-200"
+            className="rounded bg-blue-100 dark:bg-blue-900 px-2 py-2 text-sm font-semibold hover:bg-blue-200"
           >
             Good
           </button>
           <button
             type="button"
             onClick={() => onEvaluate(3)}
-            className="rounded bg-green-100 px-2 py-2 text-sm font-semibold hover:bg-green-200"
+            className="rounded bg-green-100 dark:bg-green-900 px-2 py-2 text-sm font-semibold hover:bg-green-200"
           >
             Easy
           </button>
@@ -544,7 +544,7 @@ function Judgement({
         <button
           type="button"
           onClick={onNext}
-          className="text-xs text-slate-500 hover:underline"
+          className="text-xs text-slate-500 dark:text-slate-400 hover:underline"
         >
           評価をスキップして次へ →
         </button>
@@ -588,20 +588,20 @@ function NotePanel({ questionId }: { questionId: number }) {
 
   if (!loaded) return null;
   return (
-    <div className="mt-4 rounded border border-slate-200 bg-white p-3">
+    <div className="mt-4 rounded border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-3">
       <p className="text-sm font-semibold">メモ</p>
       <textarea
         rows={2}
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder="この問題に関する自分用のメモ"
-        className="mt-2 block w-full rounded border border-slate-300 px-2 py-1 text-sm"
+        className="mt-2 block w-full rounded border border-slate-300 dark:border-slate-600 px-2 py-1 text-sm"
       />
       <button
         type="button"
         onClick={save}
         disabled={saving}
-        className="mt-2 rounded border border-slate-300 px-3 py-1 text-xs font-semibold hover:bg-slate-100 disabled:opacity-50"
+        className="mt-2 rounded border border-slate-300 dark:border-slate-600 px-3 py-1 text-xs font-semibold hover:bg-slate-100 dark:bg-slate-700 disabled:opacity-50"
       >
         {saving ? "保存中..." : saved ? "保存しました" : "メモを保存"}
       </button>
@@ -655,19 +655,19 @@ function ChatPanel({ questionId }: { questionId: number }) {
   }
 
   return (
-    <div className="mt-4 rounded border border-slate-200 bg-white">
+    <div className="mt-4 rounded border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full px-3 py-2 text-left text-sm font-semibold hover:bg-slate-50"
+        className="w-full px-3 py-2 text-left text-sm font-semibold hover:bg-slate-50 dark:bg-slate-900"
       >
         {open ? "▼" : "▶"} Claudeに質問
       </button>
       {open && (
-        <div className="border-t border-slate-200 p-3">
+        <div className="border-t border-slate-200 dark:border-slate-700 p-3">
           <div className="max-h-64 space-y-2 overflow-y-auto">
             {history.length === 0 && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 この問題について Claude Sonnet 4.6 に質問できます。
               </p>
             )}
@@ -676,18 +676,18 @@ function ChatPanel({ questionId }: { questionId: number }) {
                 key={i}
                 className={`rounded p-2 text-sm ${
                   turn.role === "user"
-                    ? "bg-blue-50"
-                    : "bg-slate-100"
+                    ? "bg-blue-50 dark:bg-blue-950"
+                    : "bg-slate-100 dark:bg-slate-700"
                 }`}
               >
-                <p className="text-xs font-semibold text-slate-500">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {turn.role === "user" ? "あなた" : "Claude"}
                 </p>
                 <p className="whitespace-pre-wrap">{turn.content}</p>
               </div>
             ))}
             {pending && (
-              <p className="text-xs text-slate-500">Claude が考えています...</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Claude が考えています...</p>
             )}
           </div>
           <div className="mt-3 flex gap-2">
@@ -702,7 +702,7 @@ function ChatPanel({ questionId }: { questionId: number }) {
                 }
               }}
               placeholder="この問題について質問..."
-              className="flex-1 rounded border border-slate-300 px-3 py-2 text-sm"
+              className="flex-1 rounded border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm"
             />
             <button
               type="button"
@@ -754,21 +754,21 @@ function Summary({
 
   return (
     <section className="mt-6 space-y-4">
-      <div className="rounded-lg border border-slate-200 bg-white p-6">
+      <div className="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
         <h2 className="text-xl font-semibold">セッション結果</h2>
         <p className="mt-2 text-3xl font-bold">
           {correct} / {records.length}{" "}
-          <span className="text-base font-normal text-slate-500">
+          <span className="text-base font-normal text-slate-500 dark:text-slate-400">
             ({accuracy.toFixed(1)}%)
           </span>
         </p>
       </div>
 
-      <details className="rounded-lg border border-slate-200 bg-white p-4">
+      <details className="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-4">
         <summary className="cursor-pointer text-sm font-semibold">問題一覧</summary>
         <ul className="mt-3 space-y-2 text-sm">
           {records.map((r, i) => (
-            <li key={r.question.id} className="border-b border-slate-100 pb-2">
+            <li key={r.question.id} className="border-b border-slate-100 dark:border-slate-700 pb-2">
               <span className="font-mono">
                 {i + 1}. {r.result.is_correct ? "○" : "×"}
               </span>{" "}
@@ -789,7 +789,7 @@ function Summary({
         </button>
         <Link
           href="/"
-          className="rounded border border-slate-300 px-4 py-2 font-semibold hover:bg-slate-100"
+          className="rounded border border-slate-300 dark:border-slate-600 px-4 py-2 font-semibold hover:bg-slate-100 dark:bg-slate-700"
         >
           ダッシュボードへ
         </Link>

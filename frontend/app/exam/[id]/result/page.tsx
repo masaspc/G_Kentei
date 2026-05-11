@@ -55,17 +55,17 @@ export default function ExamResultPage() {
             ({(result.accuracy * 100).toFixed(1)}%)
           </span>
         </p>
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           所要時間 {String(minutes).padStart(2, "0")}:
           {String(seconds).padStart(2, "0")} ・ 1問あたり平均{" "}
           {avgSeconds.toFixed(1)} 秒
         </p>
       </section>
 
-      <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+      <section className="mt-6 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
         <h2 className="text-lg font-semibold">分野別正答率</h2>
         <table className="mt-3 w-full text-sm">
-          <thead className="border-b border-slate-200 text-left">
+          <thead className="border-b border-slate-200 dark:border-slate-700 text-left">
             <tr>
               <th className="py-1 pr-3">分野</th>
               <th className="py-1 pr-3">正答 / 出題</th>
@@ -74,7 +74,7 @@ export default function ExamResultPage() {
           </thead>
           <tbody>
             {result.by_category.map((c) => (
-              <tr key={c.category} className="border-b border-slate-100">
+              <tr key={c.category} className="border-b border-slate-100 dark:border-slate-700">
                 <td className="py-1 pr-3">{c.category}</td>
                 <td className="py-1 pr-3 font-mono">
                   {c.correct} / {c.attempts}
@@ -88,7 +88,7 @@ export default function ExamResultPage() {
         </table>
       </section>
 
-      <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+      <section className="mt-6 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
         <h2 className="text-lg font-semibold">誤答問題</h2>
         <ul className="mt-3 space-y-3 text-sm">
           {result.items
@@ -96,7 +96,7 @@ export default function ExamResultPage() {
             .map((i) => (
               <li
                 key={i.question_id}
-                className="rounded border border-slate-100 p-3"
+                className="rounded border border-slate-100 dark:border-slate-700 p-3"
               >
                 <p className="font-semibold">
                   #{i.question_id} ・ {i.syllabus_category} ・ 難易度{" "}
@@ -116,7 +116,7 @@ export default function ExamResultPage() {
                   </span>
                 </p>
                 {i.explanation && (
-                  <p className="mt-2 whitespace-pre-wrap text-xs text-slate-600">
+                  <p className="mt-2 whitespace-pre-wrap text-xs text-slate-600 dark:text-slate-400">
                     {i.explanation}
                   </p>
                 )}

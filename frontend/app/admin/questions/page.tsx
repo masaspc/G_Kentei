@@ -55,12 +55,12 @@ export default function QuestionsAdminPage() {
             ← ダッシュボード
           </Link>
           <h1 className="mt-1 text-2xl font-bold">問題管理</h1>
-          <p className="text-sm text-slate-600">合計 {total} 問</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">合計 {total} 問</p>
         </div>
         <div className="flex gap-2">
           <Link
             href="/admin/questions/import"
-            className="rounded border border-slate-300 px-4 py-2 font-semibold hover:bg-slate-100"
+            className="rounded border border-slate-300 dark:border-slate-600 px-4 py-2 font-semibold hover:bg-slate-100 dark:bg-slate-700"
           >
             インポート
           </Link>
@@ -79,7 +79,7 @@ export default function QuestionsAdminPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="問題文を検索..."
-          className="flex-1 rounded border border-slate-300 px-3 py-2"
+          className="flex-1 rounded border border-slate-300 dark:border-slate-600 px-3 py-2"
         />
         <button
           type="button"
@@ -87,14 +87,14 @@ export default function QuestionsAdminPage() {
             setPage(1);
             void load();
           }}
-          className="rounded border border-slate-300 px-4 py-2 hover:bg-slate-100"
+          className="rounded border border-slate-300 dark:border-slate-600 px-4 py-2 hover:bg-slate-100 dark:bg-slate-700"
         >
           検索
         </button>
       </div>
 
       <table className="mt-6 w-full border-collapse text-sm">
-        <thead className="border-b border-slate-300 bg-slate-100 text-left">
+        <thead className="border-b border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 text-left">
           <tr>
             <th className="px-3 py-2">ID</th>
             <th className="px-3 py-2">問題</th>
@@ -107,19 +107,19 @@ export default function QuestionsAdminPage() {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={6} className="px-3 py-6 text-center text-slate-500">
+              <td colSpan={6} className="px-3 py-6 text-center text-slate-500 dark:text-slate-400">
                 読み込み中...
               </td>
             </tr>
           ) : items.length === 0 ? (
             <tr>
-              <td colSpan={6} className="px-3 py-6 text-center text-slate-500">
+              <td colSpan={6} className="px-3 py-6 text-center text-slate-500 dark:text-slate-400">
                 問題がありません
               </td>
             </tr>
           ) : (
             items.map((q) => (
-              <tr key={q.id} className="border-b border-slate-200">
+              <tr key={q.id} className="border-b border-slate-200 dark:border-slate-700">
                 <td className="px-3 py-2 font-mono">{q.id}</td>
                 <td className="px-3 py-2">
                   {q.question_text.length > 60
@@ -155,7 +155,7 @@ export default function QuestionsAdminPage() {
           type="button"
           disabled={page <= 1}
           onClick={() => setPage((p) => Math.max(1, p - 1))}
-          className="rounded border border-slate-300 px-3 py-1 disabled:opacity-50"
+          className="rounded border border-slate-300 dark:border-slate-600 px-3 py-1 disabled:opacity-50"
         >
           前へ
         </button>
@@ -166,7 +166,7 @@ export default function QuestionsAdminPage() {
           type="button"
           disabled={page >= totalPages}
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-          className="rounded border border-slate-300 px-3 py-1 disabled:opacity-50"
+          className="rounded border border-slate-300 dark:border-slate-600 px-3 py-1 disabled:opacity-50"
         >
           次へ
         </button>

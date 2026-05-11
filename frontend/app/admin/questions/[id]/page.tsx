@@ -83,11 +83,11 @@ export default function EditQuestionPage() {
 
       <NoteSection questionId={question.id} />
 
-      <div className="mt-4 rounded border border-slate-200 bg-slate-50 p-4">
+      <div className="mt-4 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold">Claude で解説を生成</p>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-slate-600 dark:text-slate-400">
               Haiku 4.5 を呼び出して explanation を上書きします
               {question.explanation_source &&
                 ` (現在: ${question.explanation_source})`}
@@ -97,7 +97,7 @@ export default function EditQuestionPage() {
             type="button"
             disabled={generating}
             onClick={generateExplanation}
-            className="rounded border border-slate-300 px-3 py-1 text-sm font-semibold hover:bg-slate-200 disabled:opacity-50"
+            className="rounded border border-slate-300 dark:border-slate-600 px-3 py-1 text-sm font-semibold hover:bg-slate-200 dark:bg-slate-700 disabled:opacity-50"
           >
             {generating ? "生成中..." : "生成する"}
           </button>
@@ -146,19 +146,19 @@ function NoteSection({ questionId }: { questionId: number }) {
 
   if (!loaded) return null;
   return (
-    <div className="mt-4 rounded border border-slate-200 bg-slate-50 p-4">
+    <div className="mt-4 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
       <p className="text-sm font-semibold">自分用メモ</p>
       <textarea
         rows={3}
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        className="mt-2 block w-full rounded border border-slate-300 px-2 py-1 text-sm"
+        className="mt-2 block w-full rounded border border-slate-300 dark:border-slate-600 px-2 py-1 text-sm"
       />
       <button
         type="button"
         onClick={save}
         disabled={saving}
-        className="mt-2 rounded border border-slate-300 px-3 py-1 text-xs font-semibold hover:bg-slate-200 disabled:opacity-50"
+        className="mt-2 rounded border border-slate-300 dark:border-slate-600 px-3 py-1 text-xs font-semibold hover:bg-slate-200 dark:bg-slate-700 disabled:opacity-50"
       >
         {saving ? "保存中..." : "メモを保存"}
       </button>

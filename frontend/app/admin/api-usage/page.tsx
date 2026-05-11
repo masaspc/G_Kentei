@@ -70,19 +70,19 @@ export default function ApiUsagePage() {
         <p className="mt-6">読み込み中...</p>
       ) : (
         <>
-          <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+          <section className="mt-6 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
             <h2 className="text-lg font-semibold">今月の利用額</h2>
             <p className="mt-2 text-3xl font-bold">
               {formatUSD(summary.month_cost_usd)}{" "}
-              <span className="text-base font-normal text-slate-500">
+              <span className="text-base font-normal text-slate-500 dark:text-slate-400">
                 / 予算 {formatUSD(summary.budget_usd)}
               </span>
             </p>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               {formatJPY(summary.month_cost_usd)} / 予算{" "}
               {formatJPY(summary.budget_usd)}
             </p>
-            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-200">
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
               <div
                 className={`h-full ${
                   summary.budget_used_ratio >= 1
@@ -98,13 +98,13 @@ export default function ApiUsagePage() {
             </div>
           </section>
 
-          <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+          <section className="mt-6 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
             <h2 className="text-lg font-semibold">モデル別</h2>
             {summary.by_model.length === 0 ? (
-              <p className="mt-2 text-sm text-slate-500">利用なし</p>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">利用なし</p>
             ) : (
               <table className="mt-3 w-full text-sm">
-                <thead className="border-b border-slate-200 text-left">
+                <thead className="border-b border-slate-200 dark:border-slate-700 text-left">
                   <tr>
                     <th className="py-1 pr-3">モデル</th>
                     <th className="py-1 pr-3">呼出数</th>
@@ -116,7 +116,7 @@ export default function ApiUsagePage() {
                 </thead>
                 <tbody>
                   {summary.by_model.map((m) => (
-                    <tr key={m.model} className="border-b border-slate-100">
+                    <tr key={m.model} className="border-b border-slate-100 dark:border-slate-700">
                       <td className="py-1 pr-3 font-mono">{m.model}</td>
                       <td className="py-1 pr-3">{m.calls}</td>
                       <td className="py-1 pr-3">{m.input_tokens}</td>
@@ -130,10 +130,10 @@ export default function ApiUsagePage() {
             )}
           </section>
 
-          <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+          <section className="mt-6 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
             <h2 className="text-lg font-semibold">用途別</h2>
             {summary.by_purpose.length === 0 ? (
-              <p className="mt-2 text-sm text-slate-500">利用なし</p>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">利用なし</p>
             ) : (
               <ul className="mt-3 space-y-1 text-sm">
                 {summary.by_purpose.map((p) => (
@@ -147,10 +147,10 @@ export default function ApiUsagePage() {
             )}
           </section>
 
-          <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+          <section className="mt-6 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 p-6">
             <h2 className="text-lg font-semibold">過去 30 日の日次推移</h2>
             {summary.daily_30d.length === 0 ? (
-              <p className="mt-2 text-sm text-slate-500">利用なし</p>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">利用なし</p>
             ) : (
               <ul className="mt-3 space-y-1 text-sm">
                 {summary.daily_30d.map((d) => (

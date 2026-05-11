@@ -52,7 +52,7 @@ export default function ExportPage() {
         ← ダッシュボード
       </Link>
       <h1 className="mt-1 text-2xl font-bold">エクスポート</h1>
-      <p className="mt-1 text-sm text-slate-600">
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
         各データセットを CSV (UTF-8 BOM) でダウンロードします。Excel /
         Google Sheets / バックアップ用途。
       </p>
@@ -63,7 +63,7 @@ export default function ExportPage() {
         {EXPORTS.map((e) => (
           <li
             key={e.path}
-            className="flex items-center justify-between rounded border border-slate-200 bg-white px-4 py-3"
+            className="flex items-center justify-between rounded border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 px-4 py-3"
           >
             <span>{e.label}</span>
             <button
