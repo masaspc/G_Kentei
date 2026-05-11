@@ -20,7 +20,7 @@ from app.api.stats import router as stats_router
 from app.api.study import router as study_router
 from app.api.terms import router as terms_router
 from app.config import get_settings
-from app.seed.seeder import seed_reference_articles
+from app.seed.seeder import seed_questions, seed_reference_articles
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -32,6 +32,10 @@ async def lifespan(app: FastAPI):
         await seed_reference_articles()
     except Exception:
         logger.exception("Failed to seed reference articles")
+    try:
+        await seed_questions()
+    except Exception:
+        logger.exception("Failed to seed questions")
     yield
 
 
